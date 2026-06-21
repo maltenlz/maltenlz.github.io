@@ -6,7 +6,7 @@ date: "2026-06-01"
 categories: [template, forecasting]
 image: thumbnail.png
 image-alt: "Thumbnail shown on the projects listing card"
-draft: false
+draft: true
 format:
   html:
     code-fold: false

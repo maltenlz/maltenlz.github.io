@@ -6,7 +6,7 @@ date: "2026-05-20"
 categories: [template, examples]
 image: thumbnail.png
 image-alt: "Example thumbnail for the post"
-draft: false
+draft: true
 format:
   html:
     code-fold: false
