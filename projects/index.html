@@ -86,9 +86,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
+      searchColumns: ["listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -369,7 +369,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Zm9yZWNhc3Rpbmc=">forecasting <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dGVtcGxhdGU=">template <span class="quarto-category-count">(1)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(0)</span></div></div></div>
 <!-- main -->
 <main class="content column-page-left" id="quarto-document-content">
 
@@ -400,38 +400,7 @@ window.Quarto = {
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="dGVtcGxhdGUlMkNmb3JlY2FzdGluZw==" data-listing-date-sort="1780272000000" data-listing-file-modified-sort="1782039345815" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="171">
-<div class="thumbnail"><a href="../projects/items/template/index.html" class="no-external">
 
-<img loading="lazy" src="../projects/items/template/thumbnail.png" class="thumbnail-image" alt="Thumbnail shown on the projects listing card">
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="../projects/items/template/index.html" class="no-external">Project template — copy me</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('dGVtcGxhdGU='); return false;">template</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Zm9yZWNhc3Rpbmc='); return false;">forecasting</div>
-
-</div>
-<div class="delink listing-description"><a href="../projects/items/template/index.html" class="no-external">
-<p>One-line hook that appears on the project card and in social previews.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="../projects/items/template/index.html" class="no-external">
-<div class="listing-date">
-Jun 1, 2026
-</div>
-<div class="listing-author">
-Malte Nalenz
-</div>
-</a>
-</div>
-</div>
 </div>
 <div class="listing-no-matching d-none">No matching items</div>
 </div></main> <!-- /main -->

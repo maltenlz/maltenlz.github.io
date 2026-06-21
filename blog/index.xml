@@ -299,39 +299,5 @@ Figure&nbsp;5: When to reach for a pretrained model — and when not to.
   <pubDate>Sun, 21 Jun 2026 00:00:00 GMT</pubDate>
   <media:content url="https://maltenlz.github.io/blog/posts/evaluation/thumbnail.png" medium="image" type="image/png" height="64" width="144"/>
 </item>
-<item>
-  <title>Is LLM as a judge really a good Metric</title>
-  <dc:creator>Malte Nalenz</dc:creator>
-  <link>https://maltenlz.github.io/blog/posts/llm as a judge/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="reliability" class="level2">
-<h2 class="anchored" data-anchor-id="reliability">Reliability</h2>
-<p>Experiment: some content, but different personas, styles, formats for test-retest reliability. Readup: Test-Retest, Reliabitlity in Test theory</p>
-</section>
-<section id="validity" class="level2">
-<h2 class="anchored" data-anchor-id="validity">Validity</h2>
-<p>Experiment: Groundedness produce data for which we know the degree of groundedness, then compare with LLM as judge e.g.&nbsp; question is provide summary about person on certain dimensions (e.g.&nbsp;early life, eduaction, influence). For each have a source. Then gradually increase grounding to produce an answer and make up the missing parts. then have LLM judge it.</p>
-</section>
-<section id="directional-correctness" class="level2">
-<h2 class="anchored" data-anchor-id="directional-correctness">Directional correctness</h2>
-</section>
-<section id="ordinal-vs.-metric-scale" class="level2">
-<h2 class="anchored" data-anchor-id="ordinal-vs.-metric-scale">Ordinal vs.&nbsp;Metric scale</h2>
-
-
-</section>
-
- ]]></description>
-  <category>template</category>
-  <category>examples</category>
-  <guid>https://maltenlz.github.io/blog/posts/llm as a judge/</guid>
-  <pubDate>Wed, 20 May 2026 00:00:00 GMT</pubDate>
-  <media:content url="https://maltenlz.github.io/blog/posts/llm as a judge/thumbnail.png" medium="image" type="image/png"/>
-</item>
 </channel>
 </rss>

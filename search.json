@@ -18,7 +18,7 @@
     "href": "projects/index.html",
     "title": "Projects",
     "section": "",
-    "text": "A selection of projects spanning forecasting, logistics, and machine learning. Click a card for the full write-up.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nProject template — copy me\n\n\n\ntemplate\n\nforecasting\n\n\n\nOne-line hook that appears on the project card and in social previews.\n\n\n\n\n\nJun 1, 2026\n\n\nMalte Nalenz\n\n\n\n\n\nNo matching items"
+    "text": "A selection of projects spanning forecasting, logistics, and machine learning. Click a card for the full write-up.\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "cv.html",
@@ -112,88 +112,11 @@
     "text": "Where does this leave us?\nPretrained models allow us to build solutions for many problems that would previously have been either too expensive or impossible due to a lack of data. But there is a hidden cost resulting from giving up control of the training data.\nIf we have enough data to learn from and the budget to do so, I would probably still go with a classic ML model, such as a deep learning or gradient boosting model. Clean evaluation and confidence in the approach, as well as being able to explain them , trump 1–2% more accuracy most of the time. I think the biggest problem is that we can’t know for sure when the model will perform well, which completely offsets any small gains.Although those models are also black-box methods by nature, one can deduce behaviour from the training data, as well as use interpretability methods such as SHAP.\nHowever, pre-trained models provide a great out-of-the-box baseline and are an amazing tool for exploration and rapid prototyping.\nAs a rough decision rubric:\n\n\n\n\n\n\n---\nconfig:\n  theme: neutral\n  layout: elk\n---\nflowchart TD\n    Q1{Enough labeled data &lt;br&gt; to train from scratch?}\n    Q2{Compliance or auditing &lt;br&gt; constraints?}\n    Q3{Any labeled data &lt;br&gt; at all?}\n    CLASS[Classic ML &lt;br&gt; deep learning / boosting]\n    PRE[Pretrained model &lt;br&gt; with care for evaluation]\n    HYBRID[Pretrained as baseline &lt;br&gt; classic ML if data allows]\n    LLM[LLM / zero-shot &lt;br&gt; pretrained model]\n\n    Q1 --&gt;|yes| Q2\n    Q1 --&gt;|no| Q3\n    Q2 --&gt;|yes| CLASS\n    Q2 --&gt;|no| HYBRID\n    Q3 --&gt;|yes, but little| PRE\n    Q3 --&gt;|no| LLM\n\n    style CLASS fill:#dcfce7,stroke:#15803d,color:#1f2937\n    style PRE fill:#fef3c7,stroke:#b45309,color:#1f2937\n    style HYBRID fill:#e0e7ff,stroke:#4338ca,color:#1f2937\n    style LLM fill:#fee2e2,stroke:#b91c1c,color:#1f2937\n\n\n\n\nFigure 5: When to reach for a pretrained model — and when not to.\n\n\n\n\n\nIn all cases though, pretrained models are a great tool to validate the use-case quickly before committing to a full classical pipeline.\nFor small data domains, I expect adoption to increase rapidly in the next few years, and rightfully so, as the gains in performance are truly impressive here and make it almost impossible to justify not using them without good reasons such as compliance or auditing."
   },
   {
-    "objectID": "blog/posts/llm as a judge/index.html",
-    "href": "blog/posts/llm as a judge/index.html",
-    "title": "Is LLM as a judge really a good Metric",
-    "section": "",
-    "text": "Experiment: some content, but different personas, styles, formats for test-retest reliability. Readup: Test-Retest, Reliabitlity in Test theory"
-  },
-  {
-    "objectID": "blog/posts/llm as a judge/index.html#reliability",
-    "href": "blog/posts/llm as a judge/index.html#reliability",
-    "title": "Is LLM as a judge really a good Metric",
-    "section": "",
-    "text": "Experiment: some content, but different personas, styles, formats for test-retest reliability. Readup: Test-Retest, Reliabitlity in Test theory"
-  },
-  {
-    "objectID": "blog/posts/llm as a judge/index.html#validity",
-    "href": "blog/posts/llm as a judge/index.html#validity",
-    "title": "Is LLM as a judge really a good Metric",
-    "section": "Validity",
-    "text": "Validity\nExperiment: Groundedness produce data for which we know the degree of groundedness, then compare with LLM as judge e.g.  question is provide summary about person on certain dimensions (e.g. early life, eduaction, influence). For each have a source. Then gradually increase grounding to produce an answer and make up the missing parts. then have LLM judge it."
-  },
-  {
-    "objectID": "blog/posts/llm as a judge/index.html#directional-correctness",
-    "href": "blog/posts/llm as a judge/index.html#directional-correctness",
-    "title": "Is LLM as a judge really a good Metric",
-    "section": "Directional correctness",
-    "text": "Directional correctness"
-  },
-  {
-    "objectID": "blog/posts/llm as a judge/index.html#ordinal-vs.-metric-scale",
-    "href": "blog/posts/llm as a judge/index.html#ordinal-vs.-metric-scale",
-    "title": "Is LLM as a judge really a good Metric",
-    "section": "Ordinal vs. Metric scale",
-    "text": "Ordinal vs. Metric scale"
-  },
-  {
     "objectID": "blog/index.html",
     "href": "blog/index.html",
     "title": "Blog",
     "section": "",
-    "text": "Why pretrained models break classic MLOps\n\n\n\npre-trained models\n\nevaluation\n\nmlops\n\ntransformers\n\n\n\nHow pretrained models break the classical MLOps loop. A tour of what changes, and why it matters in practice.\n\n\n\n\n\nJun 21, 2026\n\n\nMalte Nalenz\n\n\n\n\n\n\n\n\n\n\n\n\nIs LLM as a judge really a good Metric\n\n\n\ntemplate\n\nexamples\n\n\n\nWhat classical test theory can tell us about the quality of the most widely common LLM evaluation metric.\n\n\n\n\n\nMay 20, 2026\n\n\nMalte Nalenz\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "projects/items/template/index.html",
-    "href": "projects/items/template/index.html",
-    "title": "Project template — copy me",
-    "section": "",
-    "text": "A short lead paragraph (two or three sentences) summarising the problem, the approach, and the outcome. This sits above the first heading and appears as the listing preview when the description field is empty."
-  },
-  {
-    "objectID": "projects/items/template/index.html#problem",
-    "href": "projects/items/template/index.html#problem",
-    "title": "Project template — copy me",
-    "section": "Problem",
-    "text": "Problem\nWhat was the situation, who cared about it, and what made it hard? Keep this concrete: the dataset size, the constraint that ruled out the obvious approach, the business or research goal."
-  },
-  {
-    "objectID": "projects/items/template/index.html#approach",
-    "href": "projects/items/template/index.html#approach",
-    "title": "Project template — copy me",
-    "section": "Approach",
-    "text": "Approach\nWhat you actually did. Include the modelling choices, the alternatives you considered, and any non-obvious engineering work. Diagrams and plots are welcome — see the blog post template for examples of Mermaid, matplotlib, and callouts."
-  },
-  {
-    "objectID": "projects/items/template/index.html#outcome",
-    "href": "projects/items/template/index.html#outcome",
-    "title": "Project template — copy me",
-    "section": "Outcome",
-    "text": "Outcome\nNumbers where possible: error reduction, latency, cost savings, adoption, papers, repo stars. If the project is ongoing, say what the current state is and what is next."
-  },
-  {
-    "objectID": "projects/items/template/index.html#stack",
-    "href": "projects/items/template/index.html#stack",
-    "title": "Project template — copy me",
-    "section": "Stack",
-    "text": "Stack\nPython, pandas, scikit-learn, …"
-  },
-  {
-    "objectID": "projects/items/template/index.html#links",
-    "href": "projects/items/template/index.html#links",
-    "title": "Project template — copy me",
-    "section": "Links",
-    "text": "Links\n\nGitHub repo\nWrite-up / paper\nDemo\n\n\n\nHow to use this template\n\nCopy this folder: cp -r projects/items/template projects/items/&lt;your-slug&gt;\nEdit the frontmatter at the top (title, description, date, categories, image).\nSet draft: false when ready to publish.\nDrop a thumbnail.png (square or 4:3 works well) into the same folder."
+    "text": "Why pretrained models break classic MLOps\n\n\n\npre-trained models\n\nevaluation\n\nmlops\n\ntransformers\n\n\n\nHow pretrained models break the classical MLOps loop. A tour of what changes, and why it matters in practice.\n\n\n\n\n\nJun 21, 2026\n\n\nMalte Nalenz\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "papers.html",
