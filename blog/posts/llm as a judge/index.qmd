@@ -1,0 +1,34 @@
+---
+title: "Is LLM as a judge really a good Metric"
+description: "What classical test theory can tell us about the quality of the most widely common LLM evaluation metric."
+author: "Malte Nalenz"
+date: "2026-05-20"
+categories: [template, examples]
+image: thumbnail.png
+image-alt: "Example thumbnail for the post"
+draft: false
+format:
+  html:
+    code-fold: false
+    code-tools: false
+    fig-cap-location: bottom
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Reliability
+Experiment: some content, but different personas, styles, formats for test-retest reliability.
+Readup: Test-Retest, Reliabitlity in Test theory
+
+## Validity
+Experiment: Groundedness produce data for which we know the degree of groundedness, then compare with LLM as judge
+e.g. 
+question is provide summary about person on certain dimensions (e.g. early life, eduaction, influence).
+For each have a source. 
+Then gradually increase grounding to produce an answer and make up the missing parts. then have LLM judge it.
+
+## Directional correctness
+
+## Ordinal vs. Metric scale

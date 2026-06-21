@@ -1,0 +1,15 @@
+---
+title: "Projects"
+listing:
+  contents: items
+  sort: "date desc"
+  type: default
+  categories: true
+  sort-ui: false
+  filter-ui: false
+  feed: false
+page-layout: full
+title-block-banner: false
+---
+
+A selection of projects spanning forecasting, logistics, and machine learning. Click a card for the full write-up.

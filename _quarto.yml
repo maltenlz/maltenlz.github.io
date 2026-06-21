@@ -1,0 +1,56 @@
+project:
+  type: website
+  output-dir: _site
+
+execute:
+  freeze: auto
+
+website:
+  title: "Malte Nalenz, PhD"
+  description: "Lead Data Scientist — Time Series, Logistics, and Machine Learning"
+  site-url: https://maltenlz.github.io
+  repo-url: https://github.com/maltenlz/maltenlz.github.io
+  navbar:
+    left:
+      - href: index.qmd
+        text: About
+      - href: projects/index.qmd
+        text: Projects
+      - href: papers.qmd
+        text: Papers
+      - href: blog/index.qmd
+        text: Blog
+      - href: cv.qmd
+        text: CV
+    right:
+      - icon: github
+        href: https://github.com/maltenlz
+        aria-label: GitHub
+      - icon: linkedin
+        href: https://www.linkedin.com/
+        aria-label: LinkedIn
+      - icon: envelope
+        href: mailto:malte.nlz@gmail.com
+        aria-label: Email
+  page-footer:
+    left: "© 2026 Malte Nalenz"
+    right:
+      - icon: github
+        href: https://github.com/maltenlz
+      - icon: linkedin
+        href: https://www.linkedin.com/
+      - icon: envelope
+        href: mailto:malte.nlz@gmail.com
+
+format:
+  html:
+    theme:
+      light: [flatly, theme-light.scss]
+      dark: [darkly, theme-dark.scss]
+    css: styles.css
+    toc: true
+    grid:
+      body-width: 1200px
+      sidebar-width: 250px
+      margin-width: 250px
+      gutter-width: 1.5rem

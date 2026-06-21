@@ -1,0 +1,82 @@
+---
+title: "Papers"
+---
+During my PhD and Postdoc I researched at the intersection of classical Statistics, Machine Learning and Evaluation methods.
+
+Below my peer-reviewed publications and dissertation. See also my
+[Google Scholar profile](https://scholar.google.com/citations?user=c1svxKoAAAAJ&hl=de).
+
+## Machine Learning Methods, Interpretability and Robustness
+
+- **Nalenz, M., Rodemann, J., & Augustin, T.** (2024).
+  *Learning de-biased regression trees and forests from complex samples*.
+  Machine Learning.
+  [Springer](https://link.springer.com/article/10.1007/s10994-023-06439-1)
+
+- **Nalenz, M., & Augustin, T.** (2022).
+  *Compressed rule ensemble learning*.
+  International Conference on Artificial Intelligence and Statistics (AISTATS).
+  [PDF](https://proceedings.mlr.press/v151/nalenz22a/nalenz22a.pdf)
+
+- **Nalenz, M., & Augustin, T.** (2019).
+  *Characterizing uncertainty in decision trees through imprecise splitting rules*.
+  International Symposium on Imprecise Probability: Theories and Applications (ISIPTA).
+  [PDF](https://www.sipta.org/isipta19/contributions/abstract_nalenz19.pdf)
+
+- **Nalenz, M., & Villani, M.** (2018).
+  *Tree ensembles with rule structured horseshoe regularization*.
+  The Annals of Applied Statistics.
+  [PDF](https://arxiv.org/pdf/1702.05008) ·
+  [arXiv](https://arxiv.org/abs/1702.05008)
+
+
+## Evaluation Methods for ML & AI
+
+- **Blocher, H., Schollmeyer, G., Nalenz, M., & Jansen, C.** (2024).
+  *Comparing machine learning algorithms by union-free generic depth*.
+  International Journal of Approximate Reasoning.
+  [PDF](https://arxiv.org/pdf/2312.12839) ·
+  [arXiv](https://arxiv.org/abs/2312.12839)
+
+- **Hornung, R., Nalenz, M., Schneider, L., Bender, A., Bothmann, L., Bischl, B., et al.** (2023).
+  *Evaluating machine learning models in non-standard settings: An overview and new findings*.
+  arXiv preprint.
+  [PDF](https://arxiv.org/pdf/2310.15108) ·
+  [arXiv](https://arxiv.org/abs/2310.15108)
+
+- **Jansen, C., Nalenz, M., Schollmeyer, G., & Augustin, T.** (2023).
+  *Statistical comparisons of classifiers by generalized stochastic dominance*.
+  Journal of Machine Learning Research.
+  [PDF](https://www.jmlr.org/papers/v24/22-0902.html) ·
+  [arXiv](https://arxiv.org/abs/2209.01857)
+
+- **Blocher, H., Schollmeyer, G., Jansen, C., & Nalenz, M.** (2023).
+  *Depth functions for partial orders with a descriptive analysis of machine learning algorithms*.
+  International Symposium on Imprecise Probability: Theories and Applications (ISIPTA).
+  [PDF](https://proceedings.mlr.press/v215/blocher23a/blocher23a.pdf) ·
+  [arXiv](https://arxiv.org/abs/2304.09872)
+
+
+## Applications
+
+- **Fuetterer, C., Nalenz, M., Augustin, T., & Pfeiffer, R. M.** (2025).
+  *A powerful penalized multinomial logistic regression approach*.
+  Computational Statistics.
+  [Springer](https://link.springer.com/article/10.1007/s00180-025-01635-0) ·
+  [PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC12552268/)
+
+- **Kreiss, D., Nalenz, M., & Augustin, T.** (2020).
+  *Undecided voters as set-valued information — machine learning approaches under complex uncertainty*.
+  ECML/PKDD Workshop on Uncertainty in Machine Learning.
+
+- **Seibold, H., Czerny, S., Decke, S., Dieterle, R., Eder, T., Fohr, S., Hahn, N., et al.** (2021).
+  *A computational reproducibility study of PLOS ONE articles featuring longitudinal data analyses*.
+  PLOS ONE.
+  [PDF](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0251194)
+
+## Dissertation
+
+- **Nalenz, M.** (2022).
+  *Characterizing model uncertainty in ensemble learning*.
+  PhD thesis, Ludwig-Maximilians-Universität München.
+  [PDF](https://edoc.ub.uni-muenchen.de/30379/1/Nalenz_Malte.pdf)

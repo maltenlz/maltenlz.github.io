@@ -1,0 +1,39 @@
+---
+title: "Malte Nalenz, PhD"
+subtitle: "Lead Data Scientist — Time Series, Logistics & Machine Learning"
+toc: false
+
+about:
+  template: trestles
+  image: profile.jpg
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/dr-malte-nalenz-7a5169124
+    - icon: github
+      text: GitHub
+      href: https://github.com/maltenlz
+    - icon: envelope
+      text: Email
+      href: mailto:malte.nlz@gmail.com
+    - icon: mortarboard
+      text: Google Scholar
+      href: https://scholar.google.com/citations?user=c1svxKoAAAAJ&hl=d
+---
+
+I am a Lead Data Scientist working at the intersection of **time series forecasting**,
+**logistics**, and **machine learning**, with a strong foundation in statistics (PhD).
+
+I help organizations turn operational data into reliable forecasts, smarter
+planning decisions, and production-grade ML systems.
+## What I do
+
+- **Forecasting & time series** — demand, capacity, and operational forecasting at scale
+- **Logistics & operations** — optimization and decision-support systems
+- **Machine learning** — from research prototypes to production deployments
+- **Statistical consulting** — methodology, experimentation, and rigorous analysis
+
+## Get in touch
+
+If you're looking for help with a forecasting, ML, or statistics problem,
+[reach out by email](mailto:malte.nlz@gmail.com).

@@ -1,0 +1,48 @@
+---
+title: "CV"
+---
+
+A PDF version of my CV is available [here](cv.pdf).
+
+## Experience
+
+**Lead Data Scientist** — SQUER *(2026–Present)*
+
+Leading the Data Products team, to work on machine learning, data engineering and data analysis topics, with a focus on highly regulated industries.
+
+**AI Engineer** — AppliedAI *(2025–2026)*
+
+**Freelance Data Scientist & AI Engineer** — ViaEurope *(2016-2025)*
+
+**Freelance Data Scientist & AI Engineer** — AlixPartners *(2017-2019 & 2024-2025)*
+
+**Freelance Senior Data Scientist** — CTcon *(2016-2024)*
+Long term freelancing 
+
+
+Short description.
+
+## Education
+
+**PhD, Statistics** — LMU München *(2019 - 2022)*
+
+Research at the intersection of statistics and machine learning methods, with a focus on uncertainty quantification, interpretable AI and model evaluation.
+
+**MSc, Statistics and Data Mining** — Linköpings Universitet, Sweden *(2014-2016)*
+
+
+
+**BSc, Sociology** — LMU München *(2011-2014)*
+
+**BSc, Statistics** — LMU München *(2011-2014)*
+
+## Certifications
+- Azure AI associate
+- Claude Solution Architect
+
+
+## Skills
+- **Forecasting & time series:** classical methods, state-space, ML-based forecasting
+- **Machine learning:** supervised, probabilistic models, model evaluation
+- **Statistics:** Bayesian methods, experimental design, causal inference
+- **Tools:** Python, R, SQL, …

@@ -1,0 +1,11 @@
+/.quarto/
+/_site/
+.venv/
+__pycache__/
+.DS_Store
+
+# Keep _freeze/ committed so the GH Action doesn't re-execute every post
+
+**/*.quarto_ipynb
+
+/_*.local

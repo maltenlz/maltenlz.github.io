@@ -1,0 +1,61 @@
+---
+title: "Project template — copy me"
+description: "One-line hook that appears on the project card and in social previews."
+author: "Malte Nalenz"
+date: "2026-06-01"
+categories: [template, forecasting]
+image: thumbnail.png
+image-alt: "Thumbnail shown on the projects listing card"
+draft: false
+format:
+  html:
+    code-fold: false
+    code-tools: false
+    fig-cap-location: bottom
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+A short lead paragraph (two or three sentences) summarising the problem, the
+approach, and the outcome. This sits above the first heading and appears as
+the listing preview when the `description` field is empty.
+
+## Problem
+
+What was the situation, who cared about it, and what made it hard? Keep this
+concrete: the dataset size, the constraint that ruled out the obvious
+approach, the business or research goal.
+
+## Approach
+
+What you actually did. Include the modelling choices, the alternatives you
+considered, and any non-obvious engineering work. Diagrams and plots are
+welcome — see the [blog post template](../../../blog/posts/template/index.qmd)
+for examples of Mermaid, matplotlib, and callouts.
+
+## Outcome
+
+Numbers where possible: error reduction, latency, cost savings, adoption,
+papers, repo stars. If the project is ongoing, say what the current state is
+and what is next.
+
+## Stack
+
+Python, pandas, scikit-learn, …
+
+## Links
+
+- [GitHub repo](https://github.com/)
+- [Write-up / paper](#)
+- [Demo](#)
+
+---
+
+### How to use this template
+
+1. Copy this folder: `cp -r projects/items/template projects/items/<your-slug>`
+2. Edit the frontmatter at the top (title, description, date, categories, image).
+3. Set `draft: false` when ready to publish.
+4. Drop a `thumbnail.png` (square or 4:3 works well) into the same folder.

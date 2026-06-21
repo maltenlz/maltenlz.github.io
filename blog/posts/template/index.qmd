@@ -1,0 +1,129 @@
+---
+title: "Post template — mixing diagrams, plots, and prose"
+description: "A starter template demonstrating Mermaid, Python plots, callouts, and math in one post."
+author: "Malte Nalenz"
+date: "2026-05-20"
+categories: [template, examples]
+image: thumbnail.png
+image-alt: "Example thumbnail for the post"
+draft: true
+format:
+  html:
+    code-fold: false
+    code-tools: true
+    fig-cap-location: bottom
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+A short lead paragraph that summarizes the post in two or three sentences.
+This sits above the first heading and shows up as the listing preview when
+the `description` field is empty.
+
+## A simple diagram
+
+Mermaid diagrams render natively in Quarto — no extra setup needed.
+
+```{mermaid}
+---
+config:
+  look: handDrawn
+  theme: neutral
+  layout: elk
+---
+flowchart TD
+    A{large \n number TS?} -->|yes| B{Share similar pattern}
+    A -->|no| C{Interpretability \n required?}
+    C -->|no| D[Pretrained Transformer]
+    C -->|yes| E[Classic Time Series]
+    B -->|no| D
+    B -->|yes| F[Global ML forecasting]
+```
+
+Use Mermaid for pipelines, sequence diagrams, decision trees, or anything
+otherwise diagrammable. Full syntax reference:
+[mermaid-js.github.io](https://mermaid-js.github.io/).
+
+## A Python plot
+
+Code cells execute at render time. The first run can be slow; subsequent
+renders use Quarto's freeze cache (`_freeze/`), so unchanged posts are not
+re-executed in CI.
+
+```{python}
+#| label: fig-forecast
+#| fig-cap: "Synthetic demand series with a simple rolling-mean forecast."
+#| fig-width: 8
+#| fig-height: 4
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(42)
+t = pd.date_range("2025-01-01", periods=120, freq="D")
+trend = np.linspace(100, 140, len(t))
+seasonal = 8 * np.sin(2 * np.pi * np.arange(len(t)) / 7)
+noise = rng.normal(0, 4, len(t))
+y = trend + seasonal + noise
+
+series = pd.Series(y, index=t, name="demand")
+forecast = series.rolling(window=14, min_periods=1).mean()
+
+fig, ax = plt.subplots()
+ax.plot(series.index, series.values, label="actual", lw=1, alpha=0.6)
+ax.plot(forecast.index, forecast.values, label="14-day rolling mean", lw=2)
+ax.set_xlabel("date")
+ax.set_ylabel("demand")
+ax.legend(frameon=False)
+fig.tight_layout()
+plt.show()
+```
+
+The figure above is referenced as [@fig-forecast] via its `label`. Cross-references
+work for figures, tables, equations, and sections.
+
+## Prose with math and emphasis
+
+Inline math: $\hat{y}_{t+1} = \frac{1}{k}\sum_{i=0}^{k-1} y_{t-i}$.
+
+Display math:
+
+$$
+\text{MAPE} = \frac{100\%}{n} \sum_{t=1}^{n} \left| \frac{y_t - \hat{y}_t}{y_t} \right|
+$$ {#eq-mape}
+
+Refer to equations with [@eq-mape].
+
+## Callouts for asides
+
+::: {.callout-note}
+Use callouts to highlight context, caveats, or side-notes without breaking
+the flow of the main argument.
+:::
+
+::: {.callout-warning}
+## When rolling means break
+A rolling-mean baseline is only honest on stationary series. If trend or
+regime shifts dominate, it under-reacts and the bias compounds.
+:::
+
+## Tables
+
+| Method                 | MAPE | Notes                                  |
+|------------------------|-----:|----------------------------------------|
+| Naive (last value)     | 12.4 | Strong baseline; surprisingly hard to beat. |
+| Rolling mean (14d)     |  8.1 | Smooths weekly seasonality.            |
+| Seasonal naive (7d)    |  6.7 | Captures the dominant weekly cycle.    |
+| LightGBM with lags     |  4.9 | Best with feature engineering.         |
+
+: Forecast accuracy on the synthetic series above. {#tbl-results}
+
+See [@tbl-results] for the comparison.
+
+## Wrapping up
+
+Close with the takeaway: one or two sentences on what the reader should
+remember. Link to the next post or a related project if useful.
