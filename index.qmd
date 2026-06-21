@@ -26,6 +26,7 @@ I am a Lead Data Scientist working at the intersection of **time series forecast
 
 I help organizations turn operational data into reliable forecasts, smarter
 planning decisions, and production-grade ML systems.
+
 ## What I do
 
 - **Forecasting & time series** — demand, capacity, and operational forecasting at scale

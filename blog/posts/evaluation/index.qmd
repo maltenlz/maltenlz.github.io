@@ -18,7 +18,8 @@ execute:
   message: false
 ---
 
-With the advent of pre-trained models, deploying ML/AI models is becoming **easier**. Most notably, LLMs are now widely used for tasks that previously required training specialised ML models and experts with deep expertise to do so. The same trend is also happening outside of GenAI, with prefitted models such as TabPFN for tabular data and models like Chronos and TiREX in the time-series domain [Chronos: [Ansari et al., 2024](https://arxiv.org/abs/2403.07815). TiREX: [Auer et al., 2025](https://arxiv.org/abs/2505.23719).]{.column-margin}. At the same time, it becomes **harder** to evaluate the performance of those models reliably, to trace back failure modes, and to react to performance regression.
+With the advent of pre-trained models, deploying ML/AI models is becoming **easier**. Most notably, LLMs are now widely used for tasks that previously required training specialised ML models and experts with deep expertise to do so. The same trend is also happening outside of GenAI, with prefitted models such as TabPFN for tabular data and models like Chronos and TiREX 
+[The original TabPFN paper is [Hollmann et al., 2023](https://arxiv.org/abs/2207.01848)]{.column-margin} in the time-series domain [Chronos: [Ansari et al., 2024](https://arxiv.org/abs/2403.07815). TiREX: [Auer et al., 2025](https://arxiv.org/abs/2505.23719).]{.column-margin}. At the same time, it becomes **harder** to evaluate the performance of those models reliably, to trace back failure modes, and to react to performance regression.
 
 In this article I will discuss the implications of pre-trained models for the traditional model lifecycle (MLOps) and the implicit trade-offs we accept when using pre-trained models.
 
@@ -52,7 +53,7 @@ flowchart LR
 We collect data, do feature engineering, split the data according to our chosen evaluation strategy, train the model on the training data and evaluate on the test data. The implicit assumption is that our evaluation metric is a good proxy for the performance we will obtain once we deploy the model. 
 
 Depending on the problem, building a sound validation framework is actually often the most difficult step. Time-series data requires respecting the temporal structure to avoid lookahead bias; clustered data can introduce its own biases if the split ignores cluster boundaries. Also one has to be very careful when calculating aggregate features, to avoid information leakage, meaning we give the model more information than it will have at prediction time. 
-[For more special cases and technical details see [our survey article on this topic](https://arxiv.org/abs/2207.01848).]{.column-margin}
+[For more special cases and technical details see [our survey article on this topic](https://arxiv.org/abs/2310.15108).]{.column-margin}
 It is generally a good idea to invest the work in a sound evaluation framework upfront, as this allows us to iterate confidently and ensures that performance gains during building also translate to better performance in production.
 
 On one hand this setting produces an upfront cost, as we need to spend time building and optimizing the model; on the other hand it gives us complete control over each of the steps.
@@ -94,7 +95,7 @@ However, the MLOps loop gives us a tool that, once set up, provides us with conf
 ## What are pretrained models?
 Pretrained models are trained on very large datasets that span a wide range of possible applications, rather than on the specific data of one downstream task. Those datasets can be artificial as is the case for TabPFN, real data (GPT) or hybrids (RealTabPFN). 
 
-TabPFN [The original TabPFN paper is [Hollmann et al., 2023](https://arxiv.org/abs/2207.01848)]{.column-margin} uses a sophisticated approach to first generate random causal structures, which are then used to create datasets $D_{train}$ and $D_{test}$ based on this complex distribution. Then a transformer model is trained for zero-shot prediction: holding $D_{train}$ in context the model predicts $y_{test}$ in a **single forward pass**. The error gradient for this zero-shot prediction is then back propagated. This process is repeated on millions of simulated datasets, with a large variety of dataset sizes, causal and correlation structures and resulting distributions.
+TabPFN uses a sophisticated approach to first generate random causal structures, which are then used to create datasets $D_{train}$ and $D_{test}$ based on this complex distribution. Then a transformer model is trained for zero-shot prediction: holding $D_{train}$ in context the model predicts $y_{test}$ in a **single forward pass**. The error gradient for this zero-shot prediction is then back propagated. This process is repeated on millions of simulated datasets, with a large variety of dataset sizes, causal and correlation structures and resulting distributions.
 
 The amazing part is that the model is able to deliver strong predictions on unseen data without needing any training or adjustment of the weights whatsoever, just by knowing what relationships between **X** and **y** typically look like and activating this "knowledge" at prediction time. The predictions are pulled towards their prior, induced by the pre-training [Prior-fitted networks approximate Bayesian inference [Müller et al., 2022 — *Transformers Can Do Bayesian Inference*](https://arxiv.org/abs/2112.10510).]{.column-margin}.
 
@@ -285,7 +286,7 @@ As a rough decision rubric:
 
 ```{mermaid}
 %%| label: fig-rubric
-%%| fig-cap: "When to reach for a pretrained model — and when not to."
+%%| fig-cap: "When to reach for a pretrained model and when classic ML is the better option. ML should still be the default if data and project constraints allow."
 ---
 config:
   theme: neutral
