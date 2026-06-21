@@ -1,0 +1,49 @@
+/* Subtle tweaks on top of the cosmo theme */
+
+.navbar-title {
+  font-weight: 700;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
+/* Tighter spacing in listings */
+.quarto-listing-default .listing-item {
+  margin-bottom: 1.25rem;
+}
+
+/* About page link buttons */
+.about-links .about-link {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.5rem;
+}
+
+/* Narrower left column on the trestles About template (Quarto default is 42%) */
+.quarto-about-trestles .about-entity {
+  flex: 0 0 30%;
+  max-width: 30%;
+}
+
+.quarto-about-trestles .about-contents {
+  flex: 1 1 70%;
+  padding-left: 2.5em;
+}
+
+/* Profile image fills its column width */
+.quarto-about-trestles .about-entity .about-image {
+  max-width: 100%;
+  height: auto !important;
+  width: 85% !important;
+}
+
+/* Extra breathing room around figures, mermaid diagrams, and code-output plots */
+figure,
+.quarto-float-fig,
+.cell-output-display,
+pre.mermaid,
+pre.mermaid-js {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+

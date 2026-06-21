@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Malte Nalenz">
+<meta name="dcterms.date" content="2026-06-21">
+<meta name="description" content="How pretrained models break the classical MLOps loop. A tour of what changes, and why it matters in practice.">
+
+<title>Why pretrained models break classic MLOps – Malte Nalenz, PhD</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-aa5b3f5eb034b3b1c0629242015d45e1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-e55e02f142f9a9eada78eee81557e351.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-aa5b3f5eb034b3b1c0629242015d45e1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Malte Nalenz, PhD</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../projects/index.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../papers.html"> 
+<span class="menu-text">Papers</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../blog/index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../cv.html"> 
+<span class="menu-text">CV</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/maltenlz"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/"> <i class="bi bi-linkedin" role="img" aria-label="LinkedIn">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="mailto:malte.nlz@gmail.com"> <i class="bi bi-envelope" role="img" aria-label="Email">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#supervised-learning-pipeline" id="toc-supervised-learning-pipeline" class="nav-link active" data-scroll-target="#supervised-learning-pipeline">Supervised Learning pipeline</a></li>
+  <li><a href="#the-model-lifecycle-mlops" id="toc-the-model-lifecycle-mlops" class="nav-link" data-scroll-target="#the-model-lifecycle-mlops">The model lifecycle (MLOps)</a></li>
+  <li><a href="#what-are-pretrained-models" id="toc-what-are-pretrained-models" class="nav-link" data-scroll-target="#what-are-pretrained-models">What are pretrained models?</a></li>
+  <li><a href="#pre-trained-models-and-mlops" id="toc-pre-trained-models-and-mlops" class="nav-link" data-scroll-target="#pre-trained-models-and-mlops">Pre-trained models and MLOps</a>
+  <ul class="collapse">
+  <li><a href="#test-data-contamination" id="toc-test-data-contamination" class="nav-link" data-scroll-target="#test-data-contamination">Test data contamination</a></li>
+  <li><a href="#out-of-domain" id="toc-out-of-domain" class="nav-link" data-scroll-target="#out-of-domain">Out-of-domain</a></li>
+  <li><a href="#unknown-target-prior" id="toc-unknown-target-prior" class="nav-link" data-scroll-target="#unknown-target-prior">Unknown target prior</a></li>
+  </ul></li>
+  <li><a href="#retraining" id="toc-retraining" class="nav-link" data-scroll-target="#retraining">Retraining</a></li>
+  <li><a href="#deployment" id="toc-deployment" class="nav-link" data-scroll-target="#deployment">Deployment</a>
+  <ul class="collapse">
+  <li><a href="#computational-cost" id="toc-computational-cost" class="nav-link" data-scroll-target="#computational-cost">Computational cost</a></li>
+  <li><a href="#dependency-risk" id="toc-dependency-risk" class="nav-link" data-scroll-target="#dependency-risk">Dependency risk</a></li>
+  <li><a href="#compliance" id="toc-compliance" class="nav-link" data-scroll-target="#compliance">Compliance</a></li>
+  </ul></li>
+  <li><a href="#where-does-this-leave-us" id="toc-where-does-this-leave-us" class="nav-link" data-scroll-target="#where-does-this-leave-us">Where does this leave us?</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Why pretrained models break classic MLOps</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">pre-trained models</div>
+    <div class="quarto-category">evaluation</div>
+    <div class="quarto-category">mlops</div>
+    <div class="quarto-category">transformers</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    How pretrained models break the classical MLOps loop. A tour of what changes, and why it matters in practice.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Malte Nalenz </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 21, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="page-columns page-full"><p>With the advent of pre-trained models, deploying ML/AI models is becoming <strong>easier</strong>. Most notably, LLMs are now widely used for tasks that previously required training specialised ML models and experts with deep expertise to do so. The same trend is also happening outside of GenAI, with prefitted models such as TabPFN for tabular data and models like Chronos and TiREX in the time-series domain . At the same time, it becomes <strong>harder</strong> to evaluate the performance of those models reliably, to trace back failure modes, and to react to performance regression.</p><div class="no-row-height column-margin column-container"><span class="">Chronos: <a href="https://arxiv.org/abs/2403.07815">Ansari et al., 2024</a>. TiREX: <a href="https://arxiv.org/abs/2505.23719">Auer et al., 2025</a>.</span></div></div>
+<p>In this article I will discuss the implications of pre-trained models for the traditional model lifecycle (MLOps) and the implicit trade-offs we accept when using pre-trained models.</p>
+<section id="supervised-learning-pipeline" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="supervised-learning-pipeline">Supervised Learning pipeline</h2>
+<p>In the classical supervised-learning setup, we are given a dataset <strong>X</strong> with known targets <strong>y</strong> and want to build a model <span class="math inline">\(f(x) = y\)</span> that can be used to make accurate predictions on unseen data once we deploy it to production.</p>
+<p>The general model training pipeline looks like this:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-pipeline">---
+config:
+  theme: neutral
+  layout: elk
+---
+flowchart LR
+    D["Labeled dataset &lt;br&gt; X, y"] --&gt; S{Train / Test &lt;br&gt; split}
+    S --&gt;|train| TR[Train set]
+    S --&gt;|test| TE[Test set]
+    TR --&gt; M{Model training}
+    M --&gt; F[Fitted model]
+    TE --&gt;|X_test| F
+    F --&gt;|y_pred| EV["Evaluation &lt;br&gt; e.g. MAE, AUC"]
+    TE --&gt;|y_test| EV
+    EV -.-&gt;|proxy for| PP[Production &lt;br&gt; performance]
+
+    style PP stroke-dasharray: 5 5,color:#1f2937
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Classic ML training pipeline
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>We collect data, do feature engineering, split the data according to our chosen evaluation strategy, train the model on the training data and evaluate on the test data. The implicit assumption is that our evaluation metric is a good proxy for the performance we will obtain once we deploy the model.</p>
+<div class="page-columns page-full"><p>Depending on the problem, building a sound validation framework is actually often the most difficult step. Time-series data requires respecting the temporal structure to avoid lookahead bias; clustered data can introduce its own biases if the split ignores cluster boundaries. Also one has to be very careful when calculating aggregate features, to avoid information leakage, meaning we give the model more information than it will have at prediction time.  It is generally a good idea to invest the work in a sound evaluation framework upfront, as this allows us to iterate confidently and ensures that performance gains during building also translate to better performance in production.</p><div class="no-row-height column-margin column-container"><span class="">For more special cases and technical details see <a href="https://arxiv.org/abs/2207.01848">our survey article on this topic</a>.</span></div></div>
+<p>On one hand this setting produces an upfront cost, as we need to spend time building and optimizing the model; on the other hand it gives us complete control over each of the steps.</p>
+</section>
+<section id="the-model-lifecycle-mlops" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="the-model-lifecycle-mlops">The model lifecycle (MLOps)</h2>
+<p>MLOps generalises this pipeline to a continuous loop, which is nowadays the standard approach for using ML models in production:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-mlops" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlops-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-mlops">---
+config:
+  theme: neutral
+  layout: elk
+---
+flowchart LR
+    A[Data &lt;br&gt; collection] --&gt; B
+    subgraph tp [Training pipeline]
+        B[Data &lt;br&gt; preparation] --&gt; C[Model &lt;br&gt; training]
+        C --&gt; D[Evaluation]
+    end
+    D --&gt; E[Deployment]
+    E --&gt; F[Monitoring]
+    F -.-&gt;|drift / decay &lt;br&gt; detected| A
+
+    style tp fill:#f3f4f6,stroke:#9ca3af,color:#1f2937
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlops-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: The model lifecycle in the standard MLOps approach.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="page-columns page-full"><p>MLOps solves several problems of the static model training pipeline :</p><div class="no-row-height column-margin column-container"><span class="">The classical reference on these is Quiñonero-Candela et al., <em>Dataset Shift in Machine Learning</em> (MIT Press, 2009).</span></div></div>
+<ul>
+<li>Pattern drift: The relationship between <strong>X</strong> and <strong>y</strong> changes. This happens more often than one might think, as in supervised learning we typically model correlations not causations and the association structure can easily change. Think of fraudsters changing their behaviour.</li>
+<li>Prior drift: The distribution P(<strong>y</strong>) changes. Imagine in our training dataset we have an equal number of sick and healthy patients and train our model on this dataset and use it in production on random people where the baseline prevalence is only 0.5%. In this case a moderate false positive rate would lead to a large number of false positive predictions, due to the change of the <strong>prior</strong> distribution.</li>
+<li>Covariate shift: The distribution of the features P(<strong>X</strong>) changes significantly, which may lead to a deterioration of the model as the new data points are out of the original training domain.</li>
+</ul>
+<p>The main idea is to constantly monitor the data, the model’s behaviour, and, if we have ground-truth <strong>y</strong> values, the performance in an online fashion. As soon as we see performance regress, we can create an updated dataset and retrain the model on the current data. This also often happens periodically, e.g.&nbsp;retraining once per week. Again the devil is in the detail and setting up a good online evaluation framework can be challenging, due to delayed <strong>y</strong> values, feature changes such as unknown categories, and technical errors leading to either random or systematic missing values.</p>
+<p>However, the MLOps loop gives us a tool that, once set up, provides us with confidence that the model is working, or if not, we at least know about it.</p>
+</section>
+<section id="what-are-pretrained-models" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="what-are-pretrained-models">What are pretrained models?</h2>
+<p>Pretrained models are trained on very large datasets that span a wide range of possible applications, rather than on the specific data of one downstream task. Those datasets can be artificial as is the case for TabPFN, real data (GPT) or hybrids (RealTabPFN).</p>
+<div class="page-columns page-full"><p>TabPFN  uses a sophisticated approach to first generate random causal structures, which are then used to create datasets <span class="math inline">\(D_{train}\)</span> and <span class="math inline">\(D_{test}\)</span> based on this complex distribution. Then a transformer model is trained for zero-shot prediction: holding <span class="math inline">\(D_{train}\)</span> in context the model predicts <span class="math inline">\(y_{test}\)</span> in a <strong>single forward pass</strong>. The error gradient for this zero-shot prediction is then back propagated. This process is repeated on millions of simulated datasets, with a large variety of dataset sizes, causal and correlation structures and resulting distributions.</p><div class="no-row-height column-margin column-container"><span class="">The original TabPFN paper is <a href="https://arxiv.org/abs/2207.01848">Hollmann et al., 2023</a></span></div></div>
+<div class="page-columns page-full"><p>The amazing part is that the model is able to deliver strong predictions on unseen data without needing any training or adjustment of the weights whatsoever, just by knowing what relationships between <strong>X</strong> and <strong>y</strong> typically look like and activating this “knowledge” at prediction time. The predictions are pulled towards their prior, induced by the pre-training .</p><div class="no-row-height column-margin column-container"><span class="">Prior-fitted networks approximate Bayesian inference <a href="https://arxiv.org/abs/2112.10510">Müller et al., 2022 — <em>Transformers Can Do Bayesian Inference</em></a>.</span></div></div>
+<p>Also LLMs fall into this model class and generally the same principles apply: when generating an answer the LLM will tend towards what it saw during pre-training. The more context you provide the less influential the unconditional prior will become, which is also why methods such as few-shot learning and very detailed descriptions tend to work better, as it conditions on the specific task.</p>
+<p>Three domains which are especially promising for pre-trained models are:</p>
+<ol type="1">
+<li>Small data domain: typical examples are medical datasets, where obtaining samples is expensive, or univariate time-series forecasting with not much history. The strong prior helps here to focus on the important patterns in the data.</li>
+<li>No data domain, where we need to make decisions on the fly, and where currently LLMs are extensively used for many different tasks. In this case classical ML is just not applicable.</li>
+<li>Online learning, where data arrives only gradually. This area is still a bit under-explored but extremely promising: using pretrained models to provide a warm start, e.g.&nbsp;in Reinforcement Learning, could speed up convergence greatly.</li>
+</ol>
+<p>In those areas I expect pre-trained models to really take off in the next few years, as they allow applications which were not really possible before.</p>
+</section>
+<section id="pre-trained-models-and-mlops" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="pre-trained-models-and-mlops">Pre-trained models and MLOps</h2>
+<p>The most crucial change when using pre-trained models is that the training data is no longer something we control or even observe — it lives entirely on the model provider’s side and is reflected in the model’s weights, which are themselves typically more or less a complete black box.</p>
+<p>At inference time we only supply a context, which for an LLM is the prompt, for other models the training dataset:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">---
+config:
+  theme: neutral
+  layout: elk
+---
+flowchart LR
+    subgraph vendor [Black Box]
+        XP["X_pretrain &lt;br&gt; ???"] --&gt; M[Pretrained model]
+    end
+    XC["X_context &lt;br&gt; e.g. prompt"] --&gt; M
+    M --&gt; Y[Prediction]
+
+    style XP stroke:#b91c1c,stroke-dasharray: 5 5,color:#b91c1c
+    style vendor fill:#f3f4f6,stroke:#9ca3af,color:#1f2937
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>No model training is involved; instead the model is used as is, either by hosting it locally or via an API (fine-tuning will be covered later on in this article).</p>
+<div class="page-columns page-full"><p>On one hand this greatly simplifies things, as it removes the necessity to collect more data, do heavy feature engineering , perform hyper-parameter tuning and model training. This allows us to apply ML to topics without much groundwork beforehand.</p><div class="no-row-height column-margin column-container"><span class="">Although the effect of feature engineering on pre-trained models is still a bit blurry, more on that later.</span></div></div>
+<p>However there is also a price for this, as it leads to a couple of new problems, which we will analyse in the following sections individually.</p>
+<section id="test-data-contamination" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="test-data-contamination">Test data contamination</h3>
+<p>In the classical setup, defining a good evaluation approach is the bread and butter of the data scientist and something we have control over. Loosely speaking, one tries to avoid any overlap between train and test, as well as other spill-over effects, e.g.&nbsp;due to look-ahead bias. However, when using pretrained models, we simply don’t know which data they were trained on.</p>
+<div id="cell-fig-contamination" class="cell" data-fig-height="5" data-fig-width="6" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<div id="fig-contamination" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-contamination-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-contamination-output-1.png" width="422" height="422" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-contamination-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Train, test, and production data overlap with no way to measure it.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>One case where this could happen is in the domain of time-series forecasting. Imagine forecasting a financial time-series using a pretrained transformer, such as TiREX or Chronos, and using the last year as the hold-out test set. If recent data was used in their training and the last year happened to include a crash, chances are that this information will be used implicitly by the model when forecasting other time-series, leading to a look-ahead bias.</p>
+<div class="page-columns page-full"><p>The more extreme example is test data just being in the training data. This is often cited as the reason why LLM benchmarks can’t really be trusted anymore: LLMs scrape basically the whole internet, and even assuming honesty on the companies’ side, benchmark data can easily slip through and make its way into the training data . Realistically, this is the likely explanation for the exponential gains on benchmarks but much more modest gains in practice.</p><div class="no-row-height column-margin column-container"><span class="">Documented systematically in <a href="https://arxiv.org/abs/2310.18018">Sainz et al., 2023 — <em>NLP Evaluation in Trouble</em></a>. Contamination-resistant benchmarks like <a href="https://livebench.ai/">LiveBench</a> and <a href="https://livecodebench.github.io/">LiveCodeBench</a> try to address this by continuously refreshing test data.</span></div></div>
+<p>The key point is that we simply cannot know which data was used for training, and can only make an educated guess at best when evaluating performance on our evaluation dataset. As the training data for pre-trained models is typically proprietary, it is virtually impossible to run any checks.</p>
+<p>One might argue that as long as production data can also be found in the training data, this reflects true performance — but the argument falls apart when we assume a dynamic world. If our environment changes over time, then it becomes less and less likely that this correspondence holds.</p>
+</section>
+<section id="out-of-domain" class="level3">
+<h3 class="anchored" data-anchor-id="out-of-domain">Out-of-domain</h3>
+<p>Generally most ML models are much better at interpolating than extrapolating. This means that models will perform better in areas of the distribution space which were explored during training.</p>
+<div id="cell-fig-ood" class="cell" data-fig-height="5" data-fig-width="6" data-execution_count="2">
+<div class="cell-output cell-output-display">
+<div id="fig-ood" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ood-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-ood-output-1.png" width="422" height="422" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ood-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Production data is out of training data domain
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>A prominent example of this is LLMs asked about recent events, after the training cut-off. If no tools are allowed, the model will either refuse an answer or just hallucinate one.</p>
+<p>The same can be seen in time-series data, where pre-trained models perform worse on patterns that were not included in the training data. Early foundation models, for instance, have been documented to struggle with simple sine/cosine patterns (<a href="https://www.nature.com/articles/s41586-024-08328-6">Hollmann et al., 2024</a>).</p>
+<p>For normal ML models, one can observe feature drift (see above) as a proxy for out-of-domain production data. For pre-trained models this is again impossible, due to the opacity of the training data.</p>
+</section>
+<section id="unknown-target-prior" class="level3">
+<h3 class="anchored" data-anchor-id="unknown-target-prior">Unknown target prior</h3>
+<p>In the classical setup, the training-time class prior <span class="math inline">\(P_{train}(y)\)</span> is something we explicitly chose: it’s the empirical distribution of <strong>y</strong> in our training set. The model learns to use this prior implicitly when making predictions, which is also at the core of methods for imbalanced data.</p>
+<p>During normal MLOps, one can monitor <span class="math inline">\(P_{prod}(y)\)</span> and raise an alarm if it starts to diverge from <span class="math inline">\(P_{train}(y)\)</span>. However, again this is not possible here. To make things worse, a prior for <span class="math inline">\(P(y)\)</span> might not even be well-defined, e.g.&nbsp;for LLMs. This also prevents techniques such as calibration to be used in this setting.</p>
+<p>The topic of Reinforcement Learning from Human Feedback and supervised fine-tuning for LLMs is also a problem here, as it skews the prior from the training data (which is basically the entirety of the internet) towards the answers deemed desirable by the companies. While this can be a good thing to improve performance or avoid dangerous behaviour, it can also induce unwanted bias. Again, the main problem here is that the post-training is opaque and bias can only be observed empirically for a limited number of test cases, not on principle.</p>
+<p>Besides performance the opaqueness of the prior also creates problems for fairness and auditing: ML models are well-known to reproduce biases from the training data and pre-trained transformer models are no different here. Techniques to counteract biases in ML often control on certain “protected attributes” to measure and counteract bias against certain populations. But again this requires knowledge of the training data. To make things worse, companies can use post-training to voluntarily induce bias, with Grok being a troublesome example. In this case, as we can’t look at the post-training procedure we can only try to infer the prior from the models behaviour.</p>
+</section>
+</section>
+<section id="retraining" class="level2">
+<h2 class="anchored" data-anchor-id="retraining">Retraining</h2>
+<p>Besides the problem of measuring performance and detecting drift, pre-trained models are also typically limited in the options we have to improve performance when deterioration is found. The most common options are:</p>
+<ol type="1">
+<li>Supervised fine-tuning: if the model is open source, or the provider offers fine-tuning functionality, we can try to improve the model’s performance by using our own data to skew it towards our domain. In the above terms we would condition the model more strongly on our data, partly overriding the prior distribution. While supervised fine-tuning can be very effective, it is also quite difficult to do well, as it often leads to unwanted side effects such as overfitting on our training dataset.</li>
+<li>Improve the context: for TabPFN we can provide more training data, which improves performance. The same is true for LLMs, where techniques such as few-shot learning can be used to improve performance on our task.</li>
+<li>Feature engineering: use transformations of the training data to make the <strong>X</strong>, <strong>y</strong> mapping more explicit. This topic feels very underexplored for tabular pre-trained models. It is often claimed in papers that feature engineering is not required anymore, but in personal experiments I still found it to make quite a difference. For LLMs this could be seen as context engineering, which is also known to have a strong impact on the results.</li>
+</ol>
+<p>To summarise, while we still have some tools available, the options to counteract performance regression when it is found are more limited.</p>
+</section>
+<section id="deployment" class="level2">
+<h2 class="anchored" data-anchor-id="deployment">Deployment</h2>
+<p>For model deployment as well, pre-trained models change the equation a bit and pose a set of new challenges that one should keep in mind.</p>
+<section id="computational-cost" class="level3">
+<h3 class="anchored" data-anchor-id="computational-cost">Computational cost</h3>
+<p>Pre-trained models greatly reduce the upfront cost as they do not need to be trained and optimized. However, at inference time, they are typically much more costly compared to specialised models trained on the given task only. This appears to be an inherent property, at least of current transformer architectures, as the parameter overhead that enables meta-learning is reflected in a much larger overall network size. This is also reflected in a larger inference time.</p>
+<p>Therefore, when implementing a model for a specific task in the long term, provided that there is enough data to train a specialised model, the trade-off becomes one between the upfront investment, the inference cost, and the performance, and should be weighed carefully.</p>
+</section>
+<section id="dependency-risk" class="level3">
+<h3 class="anchored" data-anchor-id="dependency-risk">Dependency risk</h3>
+<p>As you also do not control the model directly, especially for API-based consumption, this creates a dependency risk on the model’s company. Those dependency risks are at least three-fold:</p>
+<ol type="1">
+<li>Outages or unavailabilities: recently there have been quite a few outages from the large LLM providers, and also the blocking of Claude Mythos outside of the US. Those risks are completely out of your control.</li>
+<li>Versioning and limited rollbacks: LLM versions often change silently and there is no guarantee that previous versions stay exactly the same either.</li>
+<li>Cost: costs are changing, especially for large LLMs, and there is no guarantee that the software that is viable today is still viable tomorrow if the model providers decide they need to end their subsidising and charge more per token in order to stay competitive.</li>
+</ol>
+</section>
+<section id="compliance" class="level3">
+<h3 class="anchored" data-anchor-id="compliance">Compliance</h3>
+<p>For API-based models, one needs to send data to the model provider, introducing huge compliance risks that need to be taken into account. This can be offset by hosting the models yourself in the case of open models, or by relying on vendors such as Microsoft to provide compliance-conformant models.</p>
+</section>
+</section>
+<section id="where-does-this-leave-us" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="where-does-this-leave-us">Where does this leave us?</h2>
+<p>Pretrained models allow us to build solutions for many problems that would previously have been either too expensive or impossible due to a lack of data. But there is a hidden cost resulting from giving up control of the training data.</p>
+<div class="page-columns page-full"><p>If we have enough data to learn from and the budget to do so, I would probably still go with a classic ML model, such as a deep learning or gradient boosting model. Clean evaluation and confidence in the approach, as well as being able to explain them , trump 1–2% more accuracy most of the time. I think the biggest problem is that we can’t know for sure when the model will perform well, which completely offsets any small gains.</p><div class="no-row-height column-margin column-container"><span class="">Although those models are also black-box methods by nature, one can deduce behaviour from the training data, as well as use interpretability methods such as SHAP.</span></div></div>
+<p>However, pre-trained models provide a great out-of-the-box baseline and are an amazing tool for exploration and rapid prototyping.</p>
+<p>As a rough decision rubric:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-rubric" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rubric-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-rubric">---
+config:
+  theme: neutral
+  layout: elk
+---
+flowchart TD
+    Q1{Enough labeled data &lt;br&gt; to train from scratch?}
+    Q2{Compliance or auditing &lt;br&gt; constraints?}
+    Q3{Any labeled data &lt;br&gt; at all?}
+    CLASS[Classic ML &lt;br&gt; deep learning / boosting]
+    PRE[Pretrained model &lt;br&gt; with care for evaluation]
+    HYBRID[Pretrained as baseline &lt;br&gt; classic ML if data allows]
+    LLM[LLM / zero-shot &lt;br&gt; pretrained model]
+
+    Q1 --&gt;|yes| Q2
+    Q1 --&gt;|no| Q3
+    Q2 --&gt;|yes| CLASS
+    Q2 --&gt;|no| HYBRID
+    Q3 --&gt;|yes, but little| PRE
+    Q3 --&gt;|no| LLM
+
+    style CLASS fill:#dcfce7,stroke:#15803d,color:#1f2937
+    style PRE fill:#fef3c7,stroke:#b45309,color:#1f2937
+    style HYBRID fill:#e0e7ff,stroke:#4338ca,color:#1f2937
+    style LLM fill:#fee2e2,stroke:#b91c1c,color:#1f2937
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rubric-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: When to reach for a pretrained model — and when not to.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In all cases though, pretrained models are a great tool to validate the use-case quickly before committing to a full classical pipeline.</p>
+<p>For small data domains, I expect adoption to increase rapidly in the next few years, and rightfully so, as the gains in performance are truly impressive here and make it almost impossible to justify not using them without good reasons such as compliance or auditing.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/maltenlz\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 Malte Nalenz</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/maltenlz">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:malte.nlz@gmail.com">
+      <i class="bi bi-envelope" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

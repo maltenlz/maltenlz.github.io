@@ -1,0 +1,15 @@
+[
+  {
+    "listing": "/projects/index.html",
+    "items": [
+      "/projects/items/template/index.html"
+    ]
+  },
+  {
+    "listing": "/blog/index.html",
+    "items": [
+      "/blog/posts/evaluation/index.html",
+      "/blog/posts/llm as a judge/index.html"
+    ]
+  }
+]
