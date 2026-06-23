@@ -47,3 +47,16 @@ pre.mermaid-js {
   margin-bottom: 2rem;
 }
 
+/* Align captions (not graph tops) in a multi-column layout: push diagrams to the
+   bottom of their columns so the bottom captions line up across the row. */
+.align-captions.quarto-layout-panel .quarto-layout-row {
+  align-items: end;
+}
+
+.align-captions .quarto-layout-cell figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+}
+

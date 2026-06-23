@@ -1,12 +1,12 @@
 ---
 title: "The Agentic Mirage"
-description: "What are workflows, agentic workflows and AI agents and why are agentic use-cases much more niche than you might think."
+description: "What are LLM workflows and AI agents and why are agentic use-cases much more niche than you might think."
 author: "Malte Nalenz"
-date: "2026-05-20"
-categories: [template, examples]
+date: "2026-06-27"
+categories: [agentic-ai]
 image: thumbnail.png
 image-alt: "Example thumbnail for the post"
-draft: true
+draft: false
 format:
   html:
     code-fold: false
@@ -19,7 +19,9 @@ execute:
 ---
 
 ## Introduction
-In this article I will take a look at what differentiates classic programs, llm workflows and AI agents, point out differences between them and which problems they each try to solve. I will argue that most automation problems don't actually require agentic AI but clearly mapped out processed and datamodels to be successful. This leads to a somewhat peculiar situation: If you are not able to provide clear instructions, based on domain rules, datamodels and constraints, agentic AI will most likely fail due to hallucinations and lack of grounding in domain knowledge. However, with increased understanding often the need for agents disappears, as big parts can be implemented as a deterministic workflow with some surgically placed LLM calls, which is preferable due to predictability, testibility and transparency.
+In this article I will take a look at what differentiates classic programs, LLM workflows and AI agents, point out differences between them and which problems they each try to solve. I will argue that most automation problems don't actually require agentic AI but clearly mapped out processes and data models to be successful. 
+
+This leads to a somewhat peculiar situation: If you are not able to provide clear instructions, based on domain rules, data models and constraints, agentic AI will most likely fail due to hallucinations and lack of grounding in domain knowledge. However, with increased understanding often the need for agents disappears, as big parts can be implemented as a deterministic workflow with some surgically placed LLM calls, which is preferable due to predictability, testability and transparency.
 
 > **TLDR**
 >
@@ -30,11 +32,11 @@ In this article I will take a look at what differentiates classic programs, llm 
 
 ## LLMs as smart parsers in workflows
 
-Throughout 2023/24 LLMs were mostly used for processing of unstructured information, such as document extraction, intend classification, webscraping and such. In this approach LLMs are used as a building block in an otherwise traditional workflow: e.g. an pdf is uploaded by the customer, the LLM extracts key customer information to a structured format, which is then uploaded to a SQL database. Compared to OCR, the LLM here acts as a smarter parser, which can make informed guesses about partial information and can be provided with domain specific information, such as customer information, to improve the extraction quality. \
-This may not sound like much, but unstructured data in the form of documents is omnipresent in todays economy and LLMs are extremely useful here, especially in combination with data quality checks to detect deteriorating performance and hallucinations. Anyone, who wrote a webscraper for multiple websites knows how brittle custom-written parsing can be: A change of a classname and the scraper will fail. If you use an LLM as a parser (and LLMs are excellent at understanding HTML) a small change on a website will not lead to an error and most likely not influence the output much. \
+Throughout 2023/24 LLMs were mostly used for processing of unstructured information, such as document extraction, intent classification, webscraping and such. In this approach LLMs are used as a building block in an otherwise traditional workflow: e.g. a pdf is uploaded by the customer, the LLM extracts key customer information to a structured format, which is then uploaded to a SQL database. Compared to OCR, the LLM here acts as a smarter parser, which can make informed guesses about partial information and can be provided with domain specific information, such as customer information, to improve the extraction quality. \
+This may not sound like much, but unstructured data in the form of documents is omnipresent in today's economy and LLMs are extremely useful here, especially in combination with data quality checks to detect deteriorating performance and hallucinations. Anyone who wrote a webscraper for multiple websites knows how brittle custom-written parsing can be: A change of a classname and the scraper will fail. If you use an LLM as a parser (and LLMs are excellent at understanding HTML) a small change on a website will not lead to an error and most likely not influence the output much. \
 On a more abstract level LLMs offer a **flexible** **out-of-the-box solution**, for **unstructured inputs** and either **structured or unstructured outputs**.
 
-The difference between a traditional workflow and an LLM workflow is structural: the program flow stays the same, but the deterministic building blocks are swapped for LLM calls. In a classic workflow the branching is an explicit `if/else` and the work is done by a function with typed inputs and outputs. In an LLM workflow the branch becomes a *routing* LLM call and the function becomes a string-in / string-out LLM call — each driven by its own prompt.
+The difference between a traditional workflow and an LLM workflow is that some of the deterministic building blocks are swapped for LLM calls. In a classic workflow the branching is an explicit `if/else` and the work is done by a function with typed inputs and outputs. In an LLM workflow the branch becomes a *routing* LLM call, which is much more flexible with respect to its input and the branching logic and the function becomes a string-in / string-out LLM call, which again offers great flexibility, but sacrifices testability and determinism.
 
 ::: {layout-ncol=2}
 
@@ -43,8 +45,14 @@ The difference between a traditional workflow and an LLM workflow is structural:
 ---
 config:
   look: handDrawn
-  theme: neutral
+  theme: base
   layout: elk
+  themeVariables:
+    primaryColor: "#ede9f6"
+    primaryBorderColor: "#6f42c1"
+    primaryTextColor: "#3b2e5a"
+    lineColor: "#8a8a8a"
+    fontFamily: inherit
 ---
 flowchart TD
     IN[input] --> R{category == 'A'?}
@@ -55,12 +63,18 @@ flowchart TD
 ```
 
 ```{mermaid}
-%%| fig-cap: "LLM workflow: the branch is an LLM router, the function an LLM call — each with its own prompt."
+%%| fig-cap: "LLM workflow: the branch is an LLM router, the function an LLM call."
 ---
 config:
   look: handDrawn
-  theme: neutral
+  theme: base
   layout: elk
+  themeVariables:
+    primaryColor: "#ede9f6"
+    primaryBorderColor: "#6f42c1"
+    primaryTextColor: "#3b2e5a"
+    lineColor: "#8a8a8a"
+    fontFamily: inherit
 ---
 flowchart TD
     IN["input: str"] --> R[["LLM router<br/>prompt: classify the request<br/>into category A or B"]]
@@ -72,27 +86,38 @@ flowchart TD
 
 :::
 
-However single LLM calls have a number of bottlenecks:
+However LLM workflows have a number of bottlenecks:
 
-1. Context-Engineering: If a task is moderately complex, the prompt containing instructions can become quite lengthy, which can lead to performance issues. Also one has to make sure that the context contains all relevant information, before making the API-call.
-2. LLMs are very limited in their ability to interact with their environment and have no up-to-date information.
-3. LLMs still suffer from hallucinations. Approaches like self consistency and reflection have been proposed, but they increase complexity quite a bit, making them rareley used in practice.
-4. Traditional software is harder to build, but easy to evaluate via rigorous testing. LLM based applicattions are easier to build, but harder to evaluate, due to their stochastic nature and often unstructured outputs.
+1. LLMs are very limited in their ability to interact with their environment and have no up-to-date information.
+2. One has to make sure that the context contains all relevant information, before making the API-call.
+3. LLMs still suffer from hallucinations and this is intrinsic and will not disappear as they have no concept of "knowing" and "not knowing". 
+4. Traditional software is harder to build, but easy to evaluate via rigorous testing. LLM based applications are easier to build, but harder to evaluate, due to their stochastic nature and often unstructured outputs.
 5. State-less: Learning only over in-context learning and finetuning.
 
-So while LLMs already are a handy tool when you are dealing with unstructured data, they are only a buildingblock, limiting their applicability. In order to automate a given workflow, you need to be able to clearly define it, with its inputs/outputs, the flow of data and the required data has to be digitalized. Note that GenAI is not even part of this statement. LLMs just widen the scope of workflows that are potentially automateable, as they allow to parse unstructured information in a more flexible way. However most companies already struggle with the first part, clearly defining the processes and getting the data ready. I would argue that current automation in companies is only at 20-40% of what would be possible even **without** GenAI and GenAI may add 20% to the number of processes that could in theory be automated.  \
-So while LLMs are already extremly useful in specific situations, their applicability is limited by business reality. This led to a gap between the gigantic expectations of GenAI automating a large number of jobs and a much nuanced AI adoption. Companies found it harder than anticipated to automate their processes and most PoC projects do not produce any ROI. To summarise: LLMs work well for very specific tasks but alone do not justify the hype or the spendings poured into AI currently.
+So while LLMs already are a handy tool when you are dealing with unstructured data or need a flexible function, they are only a building block, limiting their applicability. In order to automate a given workflow, you need to be able to clearly define it, with its inputs/outputs, the flow of data and the required data has to be digitalized.\
+Note that GenAI is not even part of this statement. LLMs just widen the scope of tasks that are potentially automatable, as they allow to parse unstructured information in a more flexible way. \
+However most companies already struggle with the first part, clearly defining the processes and getting the data ready. 
+
+I would argue that current automation in companies is only a fraction of what would be possible to automate even **without** GenAI and GenAI only adds to the number of processes that could in theory be automated, if we were able to obtain the data and knowledge about the process.
+
+So while LLMs are already extremely useful in specific situations, their applicability is limited by business reality. This led to a gap between the gigantic expectations of GenAI automating a large number of jobs and a much more nuanced AI adoption. Companies found it harder than anticipated to automate their processes and most PoC projects do not produce any ROI. To summarise: LLMs work well for very specific tasks but alone do not justify the hype or the spending poured into AI currently.
 
 ## Agentic AI as the promised solution for ill defined business processes
 [I use the term GenAI agents here to differentiate them from reinforcement learning agents or other decision making programs.]{.column-margin}
-GenAI agents promise to fill this gap by being much more broadly applicable. However this promise often relies on a very fuzzy definition of what an agent actually is and what it can do. On a technical level GenAI agents are LLM-driven programs that can recursively construct their own prompt and call other functions (called tools in this context) to gather environmental information and interact with it:
+GenAI agents promise to bridge this gap by being much more broadly applicable. However this promise often relies on a very fuzzy definition of what an agent actually is and what it can do. On a technical level GenAI agents are LLM-driven programs that can recursively construct their own prompt and call other functions (called tools in this context) to gather environmental information and interact with it:
 
 ```{mermaid}
 %%| fig-cap: "Agent: a reasoning loop that calls tools until it decides the task is done."
 ---
 config:
   look: handDrawn
-  theme: neutral
+  theme: base
+  themeVariables:
+    primaryColor: "#ede9f6"
+    primaryBorderColor: "#6f42c1"
+    primaryTextColor: "#3b2e5a"
+    lineColor: "#8a8a8a"
+    fontFamily: inherit
 ---
 flowchart LR
     IN["input: str"] --> AG
@@ -110,53 +135,67 @@ flowchart LR
 
 In other terms, we do not specify the sequence of actions in advance, but the GenAI agent decides on the next step given its previous steps. The main characteristics of GenAI agents are:
 
-a. Interaction with the environment via tool calling, allowing agents to dynamically gather data or use functions to manipulate the environment.
-b. Agents are stateful and typically have some type of memory. This actually increases the importance and complexity of context Engineering.
-c. Recursive reasoning or planning steps, typically implemented through intermediate steps in the prompt.
-d. Dynamic program flow, which can adapt to the problem. E.g. a research agent can 'Search -> summarise -> Search' before returning an answer, or just answer directly. This is the biggest constrast to workflows, where the program flow is static. On the flipside, the dynamic nature makes testing and verification much harder. For example if the output of the whole system is incorrect it is very hard to trace the error back.
+a. Interaction with the environment via tool calling, allowing agents to dynamically gather data or use functions to interact with the environment.
+b. Agents are stateful and typically have some type of memory. This actually increases the importance and complexity of context engineering.
+c. Recursive reasoning or planning steps, to decide on the next action and reason over its own context.
+d. Dynamic program flow, which can adapt to the problem. E.g. a research agent can 'Search -> summarise -> Search' before returning an answer, or just answer directly. This is the biggest contrast to workflows, where the program flow is static. On the flipside, the dynamic nature makes testing and verification much harder. For example if the output of the whole system is incorrect it is very hard to trace the error back.
 e. Contrary to public perception GenAI agents **DO NOT** have any built-in learning capabilities. Learning can be achieved by in-context learning, supervised fine-tuning or RL but is by no means straightforward. The problem stems from the difficulty to trace back the error mentioned under d).
 
-While a) and b) are already heavily adapted in practice, via ReAct agents, MCP and out-of the box agentic toolboxes, the real value prospect depends on c) and d). Whereas LLM Workflows are still hard to implement, due to the typical constraints in companies, such as messy processes and implicit knowledge, AI agents are promised to solve this problems through their dynamic nature and advanced reasoning capabilites. Even with only partial knowledge of processes and only partial knowledge agents are expected to be able to make smart choices in complex environments. 
+While a) and b) are already heavily adopted in practice, via ReAct agents, MCP and out-of-the-box agentic toolboxes, the real value prospect depends on c) and d) and arguably e). Whereas LLM workflows are still hard to implement, due to the typical constraints in companies, such as messy processes and implicit knowledge, AI agents are promised to solve these problems through their dynamic nature and advanced reasoning capabilities. Even with only partial knowledge of processes, agents are expected to be able to make smart choices in complex environments.
 
-So how do current agents perform? The empirical evidence on this topic is limited but there is some examples:
+So how do current agents perform? The empirical evidence on this topic is limited but there are some examples:
 
-- research agents, such as used in ChatGPT. They are useful tools, but their limitations come apparent when you search for topics that you are very familiar with: They do an okay job in providing the most important points but often provide a weird selection of further topics and references. In my experience also around 10% of information is hallucinations and increases the more niche the topic is.
+- research agents, such as used in ChatGPT. They are useful tools, but their limitations become apparent when you search for topics that you are very familiar with: They do an okay job in providing the most important points but often provide a weird selection of further topics and references. 
 - customer service bots: Sentiment is quite negative here. The dynamic nature can lead to loops and even simpler requests can fail. They are still heavily adopted, as a way to cut costs.
-- Coding agents: those are currently by far the most promising current agents. Some developers report efficiency gains, although empirical results are rather mixed. The ability to verify solutions (at least partially) via tests and program executability allows the agents to work relatively independently for an extended period time.. 
+- Coding agents: those are currently by far the most promising agents. Some developers report efficiency gains, although empirical results are rather mixed. The ability to verify solutions (at least partially) via tests and program executability allows the agents to work relatively independently for an extended period of time.
 
-Note that those examples are agents used in relatively structured domains. So what happens when you have a less defined process? The first consequence is, that it becomes very hard to measure any form of accuracy or correctness. So you will get some result. Will it be good? No one can tell. The difficulty to measure agentic performance is also the reason why 'evals' is currently all the hype in the AI community. \
-However there is reason to believe that the answer is a definite no. People working with LLMs know that hallucinations increase if a prompt is very general, lacks clear instructions and domain knowledge. For an agent this will be no different, as fundamentally it still is a (dynamicaly evolving) prompt that powers them. So when confronted with a task for which not all information is there, for sure you will get a result, but it can not be trusted whatsoever. There really is no reason to believe that agents somehow magically understand what they should do, without clear guidance. \
-Even worse: where a human in this situation might reach out to collegues, LLMs have an inbuilt tendency to please and will probably just halucinate the missing parts. From my experience the only recipe to counteract hallucinations is to provide a clear set of rules in the prompt with enough grounding domain knowledge and control flows, that validate outputs before continuing. In the current state of GenAI agents the recursive reasoning is typically not enough to reach satisfactory results, but instead GenAI agents tend to wander of in all directions without clear guidance.
+Note that those examples are agents used in relatively structured domains. So what happens when you have a less defined process? The first consequence is that it becomes very hard to measure any form of accuracy or correctness. So you will get some result. Will it be good? No one can tell. The difficulty to measure agentic performance is also the reason why 'evals' is currently all the hype in the AI community. 
+
+However there is reason to believe that the answer is a definite no. People working with LLMs know that hallucinations increase if a prompt is very general, lacks clear instructions and domain knowledge. For an agent this will be no different, as fundamentally it still is a (dynamically evolving) prompt that powers them. So when confronted with a task for which not all information is there, for sure you will get a result, but it can not be trusted whatsoever. There really is no reason to believe that agents somehow magically understand what they should do, without clear guidance. 
+
+Even worse: where a human in this situation might reach out to colleagues, LLMs have an inbuilt tendency to please and will probably just hallucinate the missing parts. From my experience the only recipe to counteract hallucinations is to provide a clear set of rules in the prompt with enough grounding domain knowledge and control flows that validate outputs before continuing. In the current state of GenAI agents the recursive reasoning is typically not enough to reach satisfactory results, but instead GenAI agents tend to wander off in all directions without clear guidance.
 
 ## The agentic mirage
 
-This leads to an interesting situation: to improve performance one bakes in more and more expert knowledge and grounding data into the agentic system. So where does this knowledge come from? Essentially, it comes from traditional process analysis, data engineering, and validation frameworks—techniques predating agentic AI. In my experience, the more you work on an agentic project, the more parts you will be able to model in traditional python code. E.g. in many domains, once you understand the process, the information gathering can be performed using normal SQL queries and you start cutting away more and more tools or subagents. \
+This leads to an interesting situation: to improve performance one bakes in more and more expert knowledge and grounding data into the agentic system. So where does this knowledge come from? Essentially, it comes from traditional process analysis, data engineering, and validation frameworks. In my experience, the more you work on an agentic project, the more parts you will be able to model in traditional Python code. E.g. in many domains, once you understand the process, the information gathering can be performed using normal SQL queries and you start cutting away more and more tools or subagents. \
 The thing is: If you can model something deterministically, it is almost always better to do so. You gain control, the ability to write tests and continuously improve quality if the results are unsatisfying.
 
-This evolution typically plays out in three stages. You start with a plain agent. Then an edge case shows up, so you patch the system prompt to handle it. Eventually you realise the edge case is deterministic and pull it out into an explicit routing step — at which point the "agent" has quietly become a workflow.
+Therefore it often goes like this:
 
-::: {layout-ncol=3}
+::: {layout-ncol=3 .align-captions}
 
 ```{mermaid}
-%%| fig-cap: "1. A plain agent that just produces a result."
+%%| fig-cap: "1. You start with a plain agent producing a mediocre result due to lack of context and domain knowledge."
 ---
 config:
   look: handDrawn
-  theme: neutral
+  theme: base
   layout: elk
+  themeVariables:
+    primaryColor: "#ede9f6"
+    primaryBorderColor: "#6f42c1"
+    primaryTextColor: "#3b2e5a"
+    lineColor: "#8a8a8a"
+    fontFamily: inherit
 ---
 flowchart TD
     IN["input"] --> A["agent"]
-    A --> OUT["result"]
+    A --> OUT["bad result"]
 ```
 
 ```{mermaid}
-%%| fig-cap: "2. An edge case appears, so the system prompt is extended to handle it."
+%%| fig-cap: "2. You add edge cases and domain knowledge into the system prompt to improve performance."
 ---
 config:
   look: handDrawn
-  theme: neutral
+  theme: base
   layout: elk
+  themeVariables:
+    primaryColor: "#ede9f6"
+    primaryBorderColor: "#6f42c1"
+    primaryTextColor: "#3b2e5a"
+    lineColor: "#8a8a8a"
+    fontFamily: inherit
 ---
 flowchart TD
     SP["system prompt<br/>+ edge case rules"] --> A["agent"]
@@ -165,25 +204,43 @@ flowchart TD
 ```
 
 ```{mermaid}
-%%| fig-cap: "3. The edge case is pulled out into an explicit routing workflow."
+%%| fig-cap: "3. You realize that you might as well just model it as a workflow."
 ---
 config:
   look: handDrawn
-  theme: neutral
+  theme: base
   layout: elk
+  themeVariables:
+    primaryColor: "#ede9f6"
+    primaryBorderColor: "#6f42c1"
+    primaryTextColor: "#3b2e5a"
+    lineColor: "#8a8a8a"
+    fontFamily: inherit
 ---
 flowchart TD
     IN["input"] --> R{"edge case?"}
     R -->|yes| H["edge-case<br/>handler"]
-    R -->|no| A["agent"]
+    R -->|no| A["LLM call"]
     H --> OUT["result"]
     A --> OUT
 ```
 
 :::
 
-> Agentic systems are like fata morganas: the more you chase them, the clearer it becomes that many processes aren’t truly dynamic but just poorly understood. Once you map them out, a static workflow often suffices.
 
+This is not to say that truly dynamic use cases where it's impossible to map out the data and decision upfront don't exist. They sure do, some examples include:
 
-* How many tasks are really dynamic in nature and how many of them are only dynamic because the process is not clearly defined?
-* If it was hard to define processes in the past, why would it be different now?
+- open ended research
+- exploratory data work
+- tracing back errors
+
+But generally, if we really find a use case that requires dynamic decision making without us knowing beforehand about the steps, the question becomes: can we really trust a GenAI agent to be able to make the correct decisions?
+
+I would argue that this is only the case if the task to be solved is very well represented in the training data (such as Python code), can be derived from common sense or has clear feedback mechanisms.
+In more specific domains there really is no reason to think that a GenAI agent will magically figure out the correct decision, as the LLM will always gravitate towards what it learned during pre-training.[I cover this pull towards the prior, and what it means for evaluation, in more detail in [Why pretrained models break classic MLOps](../evaluation/).]{.column-margin} You will need to either provide it more context or accept bad performance.
+
+One might argue, that as agents become more capable, due to better LLM's or more efficient harnesses, this will be solved. But again I don't see how that can be true, as without clear guidance the LLM can only fall back to its default, no matter how smart it is, if its not properly conditioned on the task.
+
+So why does it matter if something is a workflow or an agent? The reason for this article is that currently AI agents are sold as the solution to the problems that have plagued LLM applications for 3 years now, and software for more than 50 years, such as vague domain knowledge, implicit knowledge and unclear requirements. I argue that very few problems that were not solvable before are solvable now due to agentic AI and the "agentic revolution" is much more niche than what it is sold for:
+
+> Agentic systems are like fata morganas: the more you work on them, the clearer it becomes that many processes aren’t truly dynamic but just poorly understood. Once you map them out, a static workflow often suffices and is preferable.

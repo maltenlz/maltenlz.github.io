@@ -33,8 +33,15 @@ The general model training pipeline looks like this:
 %%| fig-cap: "Classic ML training pipeline"
 ---
 config:
-  theme: neutral
+  look: handDrawn
+  theme: base
   layout: elk
+  themeVariables:
+    primaryColor: "#ede9f6"
+    primaryBorderColor: "#6f42c1"
+    primaryTextColor: "#3b2e5a"
+    lineColor: "#8a8a8a"
+    fontFamily: inherit
 ---
 flowchart LR
     D["Labeled dataset <br> X, y"] --> S{Train / Test <br> split}
@@ -66,8 +73,15 @@ MLOps generalises this pipeline to a continuous loop, which is nowadays the stan
 %%| fig-cap: "The model lifecycle in the standard MLOps approach."
 ---
 config:
-  theme: neutral
+  look: handDrawn
+  theme: base
   layout: elk
+  themeVariables:
+    primaryColor: "#ede9f6"
+    primaryBorderColor: "#6f42c1"
+    primaryTextColor: "#3b2e5a"
+    lineColor: "#8a8a8a"
+    fontFamily: inherit
 ---
 flowchart LR
     A[Data <br> collection] --> B
@@ -117,8 +131,15 @@ At inference time we only supply a context, which for an LLM is the prompt, for 
 ```{mermaid}
 ---
 config:
-  theme: neutral
+  look: handDrawn
+  theme: base
   layout: elk
+  themeVariables:
+    primaryColor: "#ede9f6"
+    primaryBorderColor: "#6f42c1"
+    primaryTextColor: "#3b2e5a"
+    lineColor: "#8a8a8a"
+    fontFamily: inherit
 ---
 flowchart LR
     subgraph vendor [Black Box]
@@ -273,7 +294,7 @@ As you also do not control the model directly, especially for API-based consumpt
 3. Cost: costs are changing, especially for large LLMs, and there is no guarantee that the software that is viable today is still viable tomorrow if the model providers decide they need to end their subsidising and charge more per token in order to stay competitive.
 
 ### Compliance
-For API-based models, one needs to send data to the model provider, introducing huge compliance risks that need to be taken into account. This can be offset by hosting the models yourself in the case of open models, or by relying on vendors such as Microsoft to provide compliance-conformant models.
+For API-based models, one needs to send data to the model provider, introducing huge compliance risks that need to be taken into account. This can be offset by hosting the models yourself in the case of open models, or by relying on vendors such as Microsoft to provide compliance-conformant models. This is typically only prohibitive in highly regulated domains and closed-off networks with limited computing capacity. Self-hosting models is nowadays really not that difficult thanks to Hugging Face if the compute resources are available.
 
 ## Where does this leave us?
 Pretrained models allow us to build solutions for many problems that would previously have been either too expensive or impossible due to a lack of data. But there is a hidden cost resulting from giving up control of the training data.
@@ -289,8 +310,15 @@ As a rough decision rubric:
 %%| fig-cap: "When to reach for a pretrained model and when classic ML is the better option. ML should still be the default if data and project constraints allow."
 ---
 config:
-  theme: neutral
+  look: handDrawn
+  theme: base
   layout: elk
+  themeVariables:
+    primaryColor: "#ede9f6"
+    primaryBorderColor: "#6f42c1"
+    primaryTextColor: "#3b2e5a"
+    lineColor: "#8a8a8a"
+    fontFamily: inherit
 ---
 flowchart TD
     Q1{Enough labeled data <br> to train from scratch?}
