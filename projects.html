@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="nav wrap"><a class="home" href="index.html">Malte Nalenz</a><div class="links"><a href="index.html">About</a><a href="projects.html" class="on">Projects</a><a href="research.html">Research</a></div></nav>
+
+<header class="wrap">
+  <h1>Selected projects</h1>
+  <p class="lede">LLM systems, forecasting and applied machine learning, from prototype to production. Filter by tool, domain or type of work.</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<div class="filters wrap">
+  <div class="filter-box">
+    <input class="search" id="q" type="search" placeholder="Search projects, tools, methods, customers…" autocomplete="off">
+    <div class="facets" id="facets"></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="result-bar"><span id="count"></span><button class="clear" id="clear" hidden>Clear filters</button></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div id="detail">
+  <div class="scrim" data-close></div>
+  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title">
+    <div class="drawer-inner" id="drawer"></div>
+  </aside>
+</div>
+
+<script src="projects.js"></script>
+<script>
+const FACETS = [
+  { key: "type", label: "Type" },
+  { key: "domain", label: "Domain" },
+  { key: "client", label: "Customer" },
+  // behind "More filters": one row per tool group (only groups that have tools, each with its 4 most used tools, the
+  // rest behind "+N more"), then methods
+  ...TOOL_GROUPS.filter(g => PROJECTS.some(p => p[`tools:${g}`])).map(g => ({ key: `tools:${g}`, label: g, limit: 4, more: true })),
+  { key: "methods", label: "Methods", limit: 6, more: true },
+];
+
+const state = { q: "", sel: Object.fromEntries(FACETS.map(f => [f.key, new Set()])), expanded: new Set(), more: false };
+const $ = id => document.getElementById(id);
+const vals = (p, key) => [].concat(p[key] ?? []);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fmtMonth = s => { const [y, m] = s.split("-"); return `${MONTHS[m - 1]} ${y}`; };
+const months = p => { const [a, b] = [p.start, p.end].map(s => s.split("-").map(Number)); return (b[0] - a[0]) * 12 + b[1] - a[1] + 1; };
+const period = p => `${fmtMonth(p.start)} – ${fmtMonth(p.end)}`;
+const fmtNum = (v, unit) => unit === "%" || unit === "×" ? `${v}${unit}` : `${v} ${unit}`;
+// impact lines (Obsidian text list): "<metric>: <before> → <after> <unit>" (or ->), "<metric>: up|down by <value> <unit>"
+// (value may be a range "15-25" or approximate "~30"), or free text
+function parseImpact(line) {
+  let m = line.match(/^(.+?):\s*([\d.]+)\s*(?:→|->)\s*([\d.]+)\s*(.*)$/);
+  if (m) return { kind: "change", metric: m[1], before: +m[2], after: +m[3], unit: m[4] };
+  m = line.match(/^(.+?):\s*(up|down) by\s*(~?[\d.]+(?:\s*[-–]\s*[\d.]+)?)\s*(.*)$/);
+  if (m) return { kind: "by", metric: m[1], up: m[2] === "up", value: m[3].replace(/\s*[-–]\s*/, "–"), unit: m[4] };
+  return { kind: "text", text: line };
+}
+const headline = m => m.kind === "change" ? `${m.before} → ${fmtNum(m.after, m.unit)}` : `${m.up ? "↑" : "↓"} ${fmtNum(m.value, m.unit)}`;
+
+function matches(p, skip) {
+  const q = state.q.trim().toLowerCase();
+  if (q && ![p.title, p.summary, p.customer, ...p.tools, ...p.methods, ...p.type, ...p.domain].join(" ").toLowerCase().includes(q)) return false;
+  return FACETS.every(f => f.key === skip || !state.sel[f.key].size || vals(p, f.key).some(v => state.sel[f.key].has(v)));
+}
+
+function renderStats() {
+  const all = k => new Set(PROJECTS.flatMap(p => vals(p, k))).size;
+  const years = PROJECTS.map(p => +p.start.slice(0, 4));
+  $("stats").innerHTML = [
+    [PROJECTS.length, "projects"], [all("domain"), "domains"], [all("tools"), "tools"],
+  ].map(([b, s]) => `<b>${b}</b> ${s}`).join(" · ") + ` · since <b>${Math.min(...years)}</b>`;
+}
+
+function renderFacets() {
+  const row = f => {
+    const counts = {};
+    PROJECTS.forEach(p => vals(p, f.key).forEach(v => counts[v] ??= 0));
+    PROJECTS.filter(p => matches(p, f.key)).forEach(p => vals(p, f.key).forEach(v => counts[v]++));
+    let names = Object.keys(PROJECTS.reduce((a, p) => (vals(p, f.key).forEach(v => a[v] = (a[v] || 0) + 1), a), {}))
+      .sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
+    const hidden = f.limit && !state.expanded.has(f.key) ? names.length - f.limit : 0;
+    if (hidden > 0) names = [...names.slice(0, f.limit), ...names.slice(f.limit).filter(n => state.sel[f.key].has(n))];
+    const chips = names.map(n => {
+      const on = state.sel[f.key].has(n);
+      return `<button class="chip${on ? " on" : ""}" data-f="${f.key}" data-v="${esc(n)}" ${!on && !counts[n] ? "disabled" : ""}>${esc(n)}<span class="n">${counts[n]}</span></button>`;
+    }).join("");
+    const more = hidden > 0 ? `<button class="chip more" data-more="${f.key}">+${hidden} more</button>` : "";
+    return `<div class="facet"><div class="facet-name">${f.label}</div><div class="chips">${chips}${more}</div></div>`;
+  };
+  const hiddenOn = FACETS.filter(f => f.more).reduce((n, f) => n + state.sel[f.key].size, 0);
+  const toggle = `<button class="chip toggle" data-toggle>${state.more ? "− Hide tools & methods" : "+ Show tools & methods"}${!state.more && hiddenOn ? ` (${hiddenOn} on)` : ""}</button>`;
+  $("facets").innerHTML = FACETS.filter(f => !f.more).map(row).join("")
+    + (state.more ? `<div class="facet-title">// tools</div>` + FACETS.filter(f => f.more).map(row).join("") : "")
+    + `<div>${toggle}</div>`;
+}
+
+function renderGrid() {
+  const list = PROJECTS.filter(p => matches(p)).sort((a, b) => b.start.localeCompare(a.start));
+  const active = state.q || FACETS.some(f => state.sel[f.key].size);
+  $("count").textContent = `${list.length} of ${PROJECTS.length} projects`;
+  $("clear").hidden = !active;
+  $("grid").innerHTML = list.length ? list.map(p => {
+    const m = (p.impact || []).map(parseImpact).find(m => m.kind !== "text");
+    const extra = p.tools.length - 4;
+    return `<button class="card" data-id="${p.id}">
+      <div class="meta"><span>${esc(p.client)}</span><span class="dot"></span><span>${period(p)}</span></div>
+      <h3>${esc(p.title)}</h3>
+      <p>${esc(p.summary)}</p>
+      ${m ? `<div class="teaser"><b>${headline(m)}</b><span>${esc(m.metric)}</span></div>` : ""}
+      <div class="tags">${p.tools.slice(0, 4).map(t => `<span class="tag">${esc(t)}</span>`).join("")}${extra > 0 ? `<span class="tag">+${extra}</span>` : ""}</div>
+    </button>`;
+  }).join("") : `<div class="empty">No projects match these filters.</div>`;
+}
+
+function openDetail(id) {
+  const p = PROJECTS.find(p => p.id === id);
+  const impact = (p.impact || []).map(parseImpact);
+  const numbers = impact.filter(m => m.kind !== "text");
+  $("drawer").innerHTML = `
+    <button class="close" data-close aria-label="Close">×</button>
+    <div class="eyebrow" style="padding-top:8px">${[...p.domain, ...p.type].map(esc).join(" · ")}</div>
+    <h2 id="d-title">${esc(p.title)}</h2>
+    <dl class="facts">
+      <div><dt>Customer</dt><dd>${esc(p.customer)}</dd></div>
+      <div><dt>Period</dt><dd>${period(p)} <span style="color:var(--faint)">· ${months(p)} mo</span></dd></div>
+      <div><dt>Role</dt><dd>${esc(p.role)}</dd></div>
+    </dl>
+    <p class="summary">${esc(p.summary)}</p>
+    ${impact.length ? `<div class="section"><h4>Impact</h4>
+      ${numbers.length ? `<div class="tiles">${numbers.map(m => `<div class="tile"><b>${headline(m)}</b><span>${esc(m.metric)}</span></div>`).join("")}</div>` : ""}
+      ${impact.filter(m => m.kind === "text").map(m => `<p class="impact-text">${esc(m.text)}</p>`).join("")}
+    </div>` : ""}
+    ${p.drawings ? `<div class="section"><h4>How it works</h4>${p.drawings.map(d => `<img class="sheet" src="${d}" alt="">`).join("")}</div>` : ""}
+    <div class="section">${p.html.startsWith("<h2>") ? "" : "<h4>What I did</h4>"}<div class="body">${p.html}</div></div>
+    ${p.links.length ? `<div class="section"><h4>Links</h4>${p.links.map(u => `<a class="link" href="${esc(u)}">${esc(u.replace(/^https?:\/\/(www\.)?/, ""))}</a>`).join("")}</div>` : ""}
+    <div class="section"><h4>Tools</h4><div class="tags">${p.tools.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div></div>
+    ${p.methods.length ? `<div class="section"><h4>Methods</h4><div class="tags">${p.methods.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div></div>` : ""}`;
+  $("detail").classList.add("open");
+  document.body.style.overflow = "hidden";
+  $("drawer").querySelector(".close").focus();
+}
+function closeDetail() { $("detail").classList.remove("open"); document.body.style.overflow = ""; }
+
+function render() { renderFacets(); renderGrid(); }
+
+$("q").addEventListener("input", e => { state.q = e.target.value; render(); });
+$("facets").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.toggle !== undefined) state.more = !state.more;
+  else if (b.dataset.more) state.expanded.add(b.dataset.more);
+  else { const s = state.sel[b.dataset.f]; s.has(b.dataset.v) ? s.delete(b.dataset.v) : s.add(b.dataset.v); }
+  render();
+});
+$("clear").addEventListener("click", () => { state.q = ""; $("q").value = ""; FACETS.forEach(f => state.sel[f.key].clear()); render(); });
+$("grid").addEventListener("click", e => { const c = e.target.closest(".card"); if (c) openDetail(c.dataset.id); });
+$("detail").addEventListener("click", e => { if (e.target.closest("[data-close]")) closeDetail(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetail(); });
+
+renderStats();
+render();
+</script>
+
+</body>
+</html>
