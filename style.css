@@ -127,7 +127,9 @@ h1 { font-size: clamp(30px, 4.5vw, 42px); line-height: 1.15; letter-spacing: -.0
 .tile span { display: block; font-size: 13px; color: var(--muted); margin-top: 4px; }
 .link { display: block; font: 13px var(--mono); color: var(--accent); text-decoration: none; margin-bottom: 4px; }
 .link:hover { text-decoration: underline; }
-.impact-text { margin: 12px 0 0; font-size: 14px; }
+/* a free-text impact line is a tile too, without a number */
+.tile.text { display: flex; align-items: center; }
+.tile.text span { margin: 0; color: var(--ink); font-size: 14px; }
 
 .sheet { display: block; width: 100%; height: auto; }
 .sheet + .sheet { margin-top: 10px; }
