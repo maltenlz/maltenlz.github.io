@@ -2,10 +2,49 @@
 const TOOL_GROUPS = ["LLM", "ML", "Optimization", "Data", "Deployment", "Apps", "Other"];
 const PROJECTS = [
   {
+    "id": "multi-agent-advisor-for-products-and-municipal-funding",
+    "title": "Multi-agent advisor for products and municipal funding",
+    "customer": "Energy provider (via appliedAI)",
+    "start": "2025-09",
+    "end": "2025-10",
+    "domain": [
+      "Energy"
+    ],
+    "type": [
+      "LLM",
+      "Agentic AI"
+    ],
+    "role": "AI Engineer",
+    "tools": [
+      "LangGraph",
+      "LangSmith",
+      "Azure AI Foundry"
+    ],
+    "methods": [
+      "Multi-Agent Systems",
+      "Supervisor Pattern",
+      "RAG",
+      "Hybrid Search"
+    ],
+    "client": "appliedAI",
+    "impact": [],
+    "links": [],
+    "summary": "Chatbot that guides an energy provider's customers through its products and the funding their municipality offers, built as a supervisor-led team of agents with hybrid search.",
+    "html": "<h2>Problem</h2>\n<p>Which product fits a customer, and which funding they can get for it, depends on the product and on the municipality: funding programmes differ from place to place and change over time. Customers need guidance through both in one conversation.</p>\n<h2>What I did</h2>\n<ul>\n<li>Implemented the first version of the multi-agent system in LangGraph on Azure AI Foundry: a supervisor agent hands each question to a products agent or a funding agent and back, and each agent answers from documents found by hybrid search (keyword + vector, RAG)</li>\n<li>Set up tracing in LangSmith, so every conversation can be followed step by step through the agents</li>\n<li>Part of the team for the first two months, before moving to the machine scheduling project</li>\n</ul>\n<h2>Evaluation</h2>\n<ul>\n<li>The customer and the team rated answers manually as good or bad; the ratings were tracked in LangSmith next to the traces</li>\n</ul>",
+    "drawings": [
+      "drawings/funding_advisor.svg"
+    ],
+    "tools:LLM": [
+      "LangGraph",
+      "LangSmith",
+      "Azure AI Foundry"
+    ]
+  },
+  {
     "id": "agentic-machine-scheduling",
     "title": "Agentic machine scheduling",
     "customer": "Packaging manufacturer (via appliedAI)",
-    "start": "2025-09",
+    "start": "2025-10",
     "end": "2026-04",
     "domain": [
       "Manufacturing"
