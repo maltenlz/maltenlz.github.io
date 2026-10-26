@@ -36,6 +36,7 @@
     <div class="drawer-inner" id="drawer"></div>
   </aside>
 </div>
+<div class="zoom-view" id="zoom" hidden><img alt=""></div>
 
 <script src="projects.js"></script>
 <script>
@@ -62,8 +63,9 @@ const fmtNum = (v, unit) => unit === "%" || unit === "×" ? `${v}${unit}` : `${v
 // impact lines (Obsidian text list): "<metric>: <before> → <after> <unit>" (or ->), "<metric>: up|down by <value> <unit>"
 // (value may be a range "15-25" or approximate "~30"), or free text
 function parseImpact(line) {
-  let m = line.match(/^(.+?):\s*([\d.]+)\s*(?:→|->)\s*([\d.]+)\s*(.*)$/);
-  if (m) return { kind: "change", metric: m[1], before: +m[2], after: +m[3], unit: m[4] };
+  // the before value may also be a word ("hours -> 5 min") when there is no exact number
+  let m = line.match(/^(.+?):\s*(~?[\d.]+|[a-z]+)\s*(?:→|->)\s*(~?[\d.]+)\s*(.*)$/i);
+  if (m) return { kind: "change", metric: m[1], before: m[2], after: m[3], unit: m[4] };
   m = line.match(/^(.+?):\s*(up|down) by\s*(~?[\d.]+(?:\s*[-–]\s*[\d.]+)?)\s*(.*)$/);
   if (m) return { kind: "by", metric: m[1], up: m[2] === "up", value: m[3].replace(/\s*[-–]\s*/, "–"), unit: m[4] };
   return { kind: "text", text: line };
@@ -143,7 +145,7 @@ function openDetail(id) {
         ? `<div class="tile text"><span>${esc(m.text)}</span></div>`
         : `<div class="tile"><b>${headline(m)}</b><span>${esc(m.metric)}</span></div>`).join("")}</div>
     </div>` : ""}
-    ${p.drawings ? `<div class="section"><h4>How it works</h4>${p.drawings.map(d => `<img class="sheet" src="${d}" alt="">`).join("")}</div>` : ""}
+    ${p.drawings ? `<div class="section"><h4>How it works</h4>${p.drawings.map(d => `<div class="sheet-wrap"><img class="sheet" src="${d}" alt=""><button class="zoom" data-zoom="${d}" aria-label="Enlarge sketch">+</button></div>`).join("")}</div>` : ""}
     <div class="section">${p.html.startsWith("<h2>") ? "" : "<h4>What I did</h4>"}<div class="body">${p.html}</div></div>
     ${p.links.length ? `<div class="section"><h4>Links</h4>${p.links.map(u => `<a class="link" href="${esc(u)}">${esc(u.replace(/^https?:\/\/(www\.)?/, ""))}</a>`).join("")}</div>` : ""}
     <div class="section"><h4>Tools</h4><div class="tags">${p.tools.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div></div>
@@ -166,8 +168,16 @@ $("facets").addEventListener("click", e => {
 });
 $("clear").addEventListener("click", () => { state.q = ""; $("q").value = ""; FACETS.forEach(f => state.sel[f.key].clear()); render(); });
 $("grid").addEventListener("click", e => { const c = e.target.closest(".card"); if (c) openDetail(c.dataset.id); });
-$("detail").addEventListener("click", e => { if (e.target.closest("[data-close]")) closeDetail(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetail(); });
+$("detail").addEventListener("click", e => {
+  const z = e.target.closest("[data-zoom]");
+  if (z) { $("zoom").querySelector("img").src = z.dataset.zoom; $("zoom").hidden = false; }
+  else if (e.target.closest("[data-close]")) closeDetail();
+});
+$("zoom").addEventListener("click", () => { $("zoom").hidden = true; });
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (!$("zoom").hidden) $("zoom").hidden = true; else closeDetail();
+});
 
 renderStats();
 render();
