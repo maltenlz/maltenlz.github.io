@@ -18,7 +18,9 @@ const PROJECTS = [
     "tools": [
       "OR-Tools",
       "OpenAI",
-      "Azure AI Foundry"
+      "Azure AI Foundry",
+      "SQL",
+      "Pydantic"
     ],
     "methods": [
       "Constraint Programming",
@@ -42,7 +44,11 @@ const PROJECTS = [
     ],
     "tools:LLM": [
       "OpenAI",
-      "Azure AI Foundry"
+      "Azure AI Foundry",
+      "Pydantic"
+    ],
+    "tools:Data": [
+      "SQL"
     ]
   },
   {
@@ -117,7 +123,8 @@ const PROJECTS = [
       "scikit-learn",
       "XGBoost",
       "statsmodels",
-      "Databricks"
+      "Databricks",
+      "SQL"
     ],
     "methods": [
       "Ensemble Forecasting",
@@ -144,7 +151,8 @@ const PROJECTS = [
       "statsmodels"
     ],
     "tools:Data": [
-      "Databricks"
+      "Databricks",
+      "SQL"
     ]
   },
   {
@@ -268,7 +276,8 @@ const PROJECTS = [
       "PyTorch",
       "Airflow",
       "Docker",
-      "LangChain"
+      "LangChain",
+      "Pydantic"
     ],
     "methods": [
       "Fine-Tuning",
@@ -292,7 +301,8 @@ const PROJECTS = [
       "Open-Source LLMs",
       "LangSmith",
       "Textract",
-      "LangChain"
+      "LangChain",
+      "Pydantic"
     ],
     "tools:ML": [
       "PyTorch"
@@ -324,7 +334,9 @@ const PROJECTS = [
       "Airflow",
       "Docker",
       "Retool",
-      "Slack"
+      "Slack",
+      "SQL",
+      "Pydantic"
     ],
     "methods": [
       "Fine-Tuning",
@@ -345,7 +357,8 @@ const PROJECTS = [
     "tools:LLM": [
       "OpenAI",
       "LangChain",
-      "LangSmith"
+      "LangSmith",
+      "Pydantic"
     ],
     "tools:Deployment": [
       "Airflow",
@@ -354,6 +367,9 @@ const PROJECTS = [
     "tools:Apps": [
       "Retool",
       "Slack"
+    ],
+    "tools:Data": [
+      "SQL"
     ]
   }
 ];

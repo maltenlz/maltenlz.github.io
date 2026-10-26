@@ -128,7 +128,6 @@ function renderGrid() {
 function openDetail(id) {
   const p = PROJECTS.find(p => p.id === id);
   const impact = (p.impact || []).map(parseImpact);
-  const numbers = impact.filter(m => m.kind !== "text");
   $("drawer").innerHTML = `
     <button class="close" data-close aria-label="Close">×</button>
     <div class="eyebrow" style="padding-top:8px">${[...p.domain, ...p.type].map(esc).join(" · ")}</div>
@@ -140,8 +139,9 @@ function openDetail(id) {
     </dl>
     <p class="summary">${esc(p.summary)}</p>
     ${impact.length ? `<div class="section"><h4>Impact</h4>
-      ${numbers.length ? `<div class="tiles">${numbers.map(m => `<div class="tile"><b>${headline(m)}</b><span>${esc(m.metric)}</span></div>`).join("")}</div>` : ""}
-      ${impact.filter(m => m.kind === "text").map(m => `<p class="impact-text">${esc(m.text)}</p>`).join("")}
+      <div class="tiles">${impact.map(m => m.kind === "text"
+        ? `<div class="tile text"><span>${esc(m.text)}</span></div>`
+        : `<div class="tile"><b>${headline(m)}</b><span>${esc(m.metric)}</span></div>`).join("")}</div>
     </div>` : ""}
     ${p.drawings ? `<div class="section"><h4>How it works</h4>${p.drawings.map(d => `<img class="sheet" src="${d}" alt="">`).join("")}</div>` : ""}
     <div class="section">${p.html.startsWith("<h2>") ? "" : "<h4>What I did</h4>"}<div class="body">${p.html}</div></div>
