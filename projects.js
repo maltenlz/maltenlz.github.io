@@ -31,7 +31,7 @@ const PROJECTS = [
     "client": "appliedAI",
     "impact": [
       "Changeover setup time: down by 30 %",
-      "Two-week plan in ~3 minutes instead of hours of manual planning"
+      "Planning time per two-week plan: hours -> 5 min"
     ],
     "links": [],
     "summary": "An agent turns planners' plain-language input into constraints for a machine-scheduling optimizer that minimizes changeover costs.",
