@@ -135,11 +135,11 @@ function openDetail(id) {
   const impact = (p.impact || []).map(parseImpact);
   $("drawer").innerHTML = `
     <button class="close" data-close aria-label="Close">×</button>
-    <div class="eyebrow" style="padding-top:8px">${[...p.domain, ...p.type].map(esc).join(" · ")}</div>
+    <div class="eyebrow" style="padding-top:8px">${[...p.domain, ...p.type].map(esc).join(" · ")}${prod(p)}</div>
     <h2 id="d-title">${esc(p.title)}</h2>
     <dl class="facts">
       <div><dt>Customer</dt><dd>${esc(p.customer)}</dd></div>
-      <div><dt>Period</dt><dd>${period(p)} <span style="color:var(--faint)">· ${months(p)} mo</span> ${prod(p)}</dd></div>
+      <div><dt>Period</dt><dd>${period(p)} <span style="color:var(--faint)">· ${months(p)} mo</span></dd></div>
       <div><dt>Role</dt><dd>${esc(p.role)}</dd></div>
     </dl>
     <p class="summary">${esc(p.summary)}</p>
