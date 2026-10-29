@@ -78,12 +78,12 @@ h1 { font-size: clamp(30px, 4.5vw, 42px); line-height: 1.15; letter-spacing: -.0
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px;
   transition: border-color .12s, background .12s; }
 .card:hover { border-color: var(--faint); background: #ffffff; }
-/* status: production -> pulsing green dot in the card's top-right corner, level with the meta line (inline in the detail panel) */
+/* status: production -> pulsing green dot in the card's top-right corner, level with the meta line (left of the close button in the detail panel) */
 .prod { position: absolute; top: 20px; right: 20px; display: inline-flex; align-items: center; gap: 6px;
   font: 12px var(--mono); color: var(--green); }
 .card:has(.prod) .meta { padding-right: 56px; }  /* narrow cards: wrap the meta line instead of running under the badge */
 .prod::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-.facts .prod { position: static; margin-left: 6px; }
+.eyebrow .prod { position: static; float: right; margin-right: 14px; line-height: 1.4; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgb(46 160 67 / .6); } 70%, 100% { box-shadow: 0 0 0 6px rgb(46 160 67 / 0); } }
 @media (prefers-reduced-motion: reduce) { .prod::before { animation: none; } }
 .card:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
