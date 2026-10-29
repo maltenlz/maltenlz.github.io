@@ -118,6 +118,7 @@ function renderGrid() {
     const m = (p.impact || []).map(parseImpact).find(m => m.kind !== "text");
     const extra = p.tools.length - 4;
     return `<button class="card" data-id="${p.id}">
+      ${prod(p)}
       <div class="meta"><span>${esc(p.client)}</span><span class="dot"></span><span>${period(p)}</span></div>
       <h3>${esc(p.title)}</h3>
       <p>${esc(p.summary)}</p>
@@ -126,6 +127,8 @@ function renderGrid() {
     </button>`;
   }).join("") : `<div class="empty">No projects match these filters.</div>`;
 }
+
+const prod = p => p.status === "production" ? `<span class="prod" title="In production">prod</span>` : "";
 
 function openDetail(id) {
   const p = PROJECTS.find(p => p.id === id);
@@ -136,7 +139,7 @@ function openDetail(id) {
     <h2 id="d-title">${esc(p.title)}</h2>
     <dl class="facts">
       <div><dt>Customer</dt><dd>${esc(p.customer)}</dd></div>
-      <div><dt>Period</dt><dd>${period(p)} <span style="color:var(--faint)">· ${months(p)} mo</span></dd></div>
+      <div><dt>Period</dt><dd>${period(p)} <span style="color:var(--faint)">· ${months(p)} mo</span> ${prod(p)}</dd></div>
       <div><dt>Role</dt><dd>${esc(p.role)}</dd></div>
     </dl>
     <p class="summary">${esc(p.summary)}</p>
